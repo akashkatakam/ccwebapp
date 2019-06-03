@@ -1,7 +1,8 @@
 package edu.northeastern.ccwebapp.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.repository.BookRepository;
 import org.springframework.web.bind.annotation.PathVariable;
-
 import javax.servlet.http.HttpServletRequest;
 
 @Service
@@ -39,8 +39,17 @@ public class BookService {
 		}
 	}
 
-	public Iterable<Book> getBooks() {
-		return bookRepository.findAll();
+	public ResponseEntity getBooks(HttpServletRequest request) {
+		String header = request.getHeader("Authorization");
+		List<Book> bookDetails= new ArrayList<>();
+		ResponseEntity re =  userService.checkUserStatus(header);
+		HttpStatus status = re.getStatusCode();
+		if(status.equals(HttpStatus.OK)) {
+			bookDetails= bookRepository.listAllBooks();
+			return new ResponseEntity(bookDetails,HttpStatus.OK);
+		}
+		else
+			return new ResponseEntity("Not authorized to access book details",HttpStatus.UNAUTHORIZED); 
 	}
 
 	public ResponseEntity getBook(@PathVariable String bookId, HttpServletRequest request) {
