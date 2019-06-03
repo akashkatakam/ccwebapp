@@ -1,9 +1,6 @@
 package edu.northeastern.ccwebapp.pojo;
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @Entity
 @Table(name = "book_details")
 public class Book {

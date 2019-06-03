@@ -16,8 +16,10 @@ public class BookService {
 	private final UserService userService;
 	private BookRepository bookRepository;
 
-    public BookService(UserService userService) {
+    public BookService(UserService userService,BookRepository bookRepository) {
         this.userService = userService;
+        this.bookRepository = bookRepository;
+
     }
 
     public ResponseEntity addBookDetails(Book book, ResponseEntity responseEntity) {
@@ -33,7 +35,7 @@ public class BookService {
 			UUID uuid = UUID.randomUUID();
 			bookDetails.setUuid(uuid.toString());
 			bookDetails.setIsbn(book.getIsbn());
-			this.save(bookDetails);
+			bookRepository.save(bookDetails);
 			return new ResponseEntity(bookDetails, HttpStatus.CREATED);
 		}
 		else {
@@ -47,7 +49,7 @@ public class BookService {
 		ResponseEntity re =  userService.checkUserStatus(header);
 		HttpStatus status = re.getStatusCode();
 		if(status.equals(HttpStatus.OK)) {
-			bookDetails= bookRepository.listAllBooks();
+			bookDetails= bookRepository.findAll();
 			return new ResponseEntity(bookDetails,HttpStatus.OK);
 		}
 		else

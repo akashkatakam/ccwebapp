@@ -62,14 +62,14 @@ public class UserService {
             return "Please enter a valid email address.";
         }
 
-        regExpression = "^[a-zA-Z]\\w{3,14}$";
+        regExpression = "^[a-zA-Z0-9]\\w{3,14}$";
         //"^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d-]{8,}$";
         /*The password's first character must be a letter, it must contain at least 4 characters and
         no more than 15 characters and no characters other than letters,
         numbers and the underscore may be used*/
 
         pattern = Pattern.compile(regExpression);
-        matcher = pattern.matcher(user.getUsername());
+        matcher = pattern.matcher(user.getPassword());
 
         if (!matcher.matches()) {
             return "Please enter a valid password.";
