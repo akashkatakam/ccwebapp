@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.service.BookService;
 
@@ -25,7 +24,7 @@ public class BookController {
     }
     
     @GetMapping(value="/book", produces = "application/json" , consumes ="application/json")
-    public Iterable<Book> returnBookDetails(){
-    	return bookService.getBooks();
+    public ResponseEntity<?> returnBookDetails(HttpServletRequest request){
+    	return bookService.getBooks(request);
     }
 }
