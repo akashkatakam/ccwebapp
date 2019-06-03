@@ -2,14 +2,14 @@ package edu.northeastern.ccwebapp.service;
 
 import java.util.Base64;
 import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import edu.northeastern.ccwebapp.pojo.User;
 import edu.northeastern.ccwebapp.repository.UserRepository;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,31 +22,32 @@ public class UserService {
         this.userRepository = userRepository;
     }
 	
-	public String checkUserStatus(String headerResp) {
-    	String message = null;
+	public ResponseEntity checkUserStatus(String headerResp) {
+		ResponseEntity message = null;
     	if(headerResp.contains("Basic")) {
     			String[] user =  new String(Base64.getDecoder().decode(headerResp.substring(6).getBytes())).split(":", 2);//decode the header and split into username and password
-    			User u = null ;//= findByUserName(user[0]);//find it by username
+    			User u = findByUserName(user[0]);//find it by username
     			if(u!=null) {
     				if(new BCryptPasswordEncoder().matches(user[1], u.getPassword())) {//check for password match
-    					message= "Current time - "+new Date();
+    					message= new ResponseEntity("Current time - "+new Date(),HttpStatus.OK);
+    					
     				}
     				else {
-    					message="Credentials are not right";
+    					message=new ResponseEntity("Credentials are not right",HttpStatus.UNAUTHORIZED);
     				}
     			}
     			
     			else {
-    				message="User does not exist";
+    				message=new ResponseEntity("User does not exist", HttpStatus.UNAUTHORIZED);
     			}
     	}
     	else {
-    		message="User is not logged in";
+    		message=new ResponseEntity("User is not logged in", HttpStatus.UNAUTHORIZED) ;
     	}
     	return message;
     }
 
-    public String validateUserDetails(UserDetails user) {
+    public String validateUser(User user) {
 
         if(user.getUsername() == null || user.getUsername().isEmpty() ||
                 user.getPassword() == null || user.getPassword().isEmpty()) {
@@ -76,16 +77,16 @@ public class UserService {
         return "success";
     }
 
-    public ResponseEntity saveUser(UserDetails user) {
+    public ResponseEntity saveUser(User user) {
 
-        String errorMessage = validateUserDetails(user);
+        String errorMessage = validateUser(user);
         if(errorMessage.equalsIgnoreCase("success")) {
 
-            UserDetails ud = new UserDetails();
+            User ud = new User();
             ud.setUsername(user.getUsername());
             ud.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
 
-            UserDetails userByUsername = this.findByUserName(user.getUsername());
+            User userByUsername = this.findByUserName(user.getUsername());
             if (userByUsername != null) {
                 return new ResponseEntity("Username already exist, please enter another one.", HttpStatus.CONFLICT);
             }
@@ -98,7 +99,7 @@ public class UserService {
 
     }
 
-    public UserDetails findByUserName(String username) {
+    public User findByUserName(String username) {
         return userRepository.findByUsername(username);
     }
 }
