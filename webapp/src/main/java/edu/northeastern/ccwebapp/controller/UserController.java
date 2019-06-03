@@ -8,31 +8,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.User;
-import edu.northeastern.ccwebapp.service.BookService;
 import edu.northeastern.ccwebapp.service.UserService;
 
 @RestController
 public class UserController {
 	@Autowired
 	private UserService userService;
-	private BookService bookService;
-	
+
 	@GetMapping(value = "/", produces = "application/json")
 	public ResponseEntity basicAuth(HttpServletRequest req, HttpServletResponse resp) {
 		String headerResp = req.getHeader("Authorization");
-		ResponseEntity message= userService.checkUserStatus(headerResp);
+		ResponseEntity message = userService.checkUserStatus(headerResp);
 		return message;
 	}
 
-    @PostMapping(value = "/user/register", produces = "application/json" , consumes ="application/json" )
-    public ResponseEntity registerUser(@RequestBody User user) {
-        return userService.saveUser(user);
-    }
-    
-    @GetMapping(value="/book", produces = "application/json" , consumes ="application/json")
-    public Iterable<Book> returnBookDetails(){
-    	return bookService.getBooks();
-    }
+	@PostMapping(value = "/user/register", produces = "application/json", consumes = "application/json")
+	public ResponseEntity registerUser(@RequestBody User user) {
+		return userService.saveUser(user);
+	}
 }
