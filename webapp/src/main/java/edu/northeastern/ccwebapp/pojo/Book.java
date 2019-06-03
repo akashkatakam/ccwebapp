@@ -1,18 +1,13 @@
 package edu.northeastern.ccwebapp.pojo;
 import javax.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Table(name = "book_details")
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "book_id", nullable = false, unique = true)
-    private long id;
-
     @Column(name = "uuid")
-    private UUID uuid;
+    private String uuid;
 
     @Column(name = "title")
     private String title;
@@ -26,19 +21,11 @@ public class Book {
     @Column(name = "isbn")
     private String isbn;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
