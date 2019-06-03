@@ -18,4 +18,9 @@ public class UserController {
 		String message= userService.checkUserStatus(headerResp);
 		return message;
 	}
+
+    @PostMapping(value = "/user/register", produces = "application/json" , consumes ="application/json" )
+    public ResponseEntity registerUser(@RequestBody UserDetails user) {
+        return userService.saveUser(user);
+    }
 }
