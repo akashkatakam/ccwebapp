@@ -5,7 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import edu.northeastern.ccwebapp.pojo.Book;
 
 public interface BookRepository extends CrudRepository<Book , Long>{
-    Book getBookByUuid(String id);
-
+    Book findById(String id);
     List<Book> listAllBooks();
 }

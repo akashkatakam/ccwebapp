@@ -8,9 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name = "book_details")
 public class Book {
 
-	
     @Id
-    @JsonIgnoreProperties
+    //@JsonIgnoreProperties
     @Column(name = "uuid")
     private String uuid;
 
