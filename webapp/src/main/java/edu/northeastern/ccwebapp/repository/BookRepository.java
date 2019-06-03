@@ -7,5 +7,5 @@ import edu.northeastern.ccwebapp.pojo.Book;
 public interface BookRepository extends CrudRepository<Book , Long>{
     Book getBookByUuid(String id);
     
-    Iterable<Book> listAllBooks();
+    //Iterable<Book> listAll();
 }
