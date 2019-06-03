@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,5 +57,12 @@ public class BookController {
         if(status.equals(HttpStatus.OK)){
             return bookService.updateBook(book,id);
         }else return responseEntity;
+    }
+    
+    @DeleteMapping(value = "/book/{id}", consumes = "application/json" )
+    public ResponseEntity<?> deleteBookById(@PathVariable("id") String id, HttpServletRequest request) {
+    	String headerResp = request.getHeader("Authorization");
+    	ResponseEntity<?> responseEntity = userService.checkUserStatus(headerResp);
+    	return bookService.deleteBook(id, responseEntity);
     }
 }

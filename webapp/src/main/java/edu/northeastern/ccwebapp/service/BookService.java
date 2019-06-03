@@ -76,12 +76,23 @@ public class BookService {
     }
 
     private Book getBookById(String id){
-        return bookRepository.findById(id);
+        return bookRepository.findByUuid(id);
     }
     private Book save(Book book){
 	     bookRepository.save(book);
 	     return book;
     }
+    
+    public ResponseEntity<?> deleteBook(String id, ResponseEntity<?> responseEntity) {
+		if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
+			this.deleteBookById(id);
+			return new ResponseEntity(HttpStatus.NO_CONTENT);
+		}
+		else return new ResponseEntity(responseEntity.getStatusCode());
+	}
 
+    private void deleteBookById(String id) {
+    	bookRepository.deleteByUuid(id);
+    }
 }
 
