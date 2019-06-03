@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.User;
+import edu.northeastern.ccwebapp.service.BookService;
 import edu.northeastern.ccwebapp.service.UserService;
 
 @RestController
@@ -27,4 +30,5 @@ public class UserController {
     public ResponseEntity registerUser(@RequestBody User user) {
         return userService.saveUser(user);
     }
+    
 }
