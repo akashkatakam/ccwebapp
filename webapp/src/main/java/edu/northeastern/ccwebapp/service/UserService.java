@@ -22,26 +22,27 @@ public class UserService {
         this.userRepository = userRepository;
     }
 	
-	public String checkUserStatus(String headerResp) {
-    	String message = null;
+	public ResponseEntity checkUserStatus(String headerResp) {
+		ResponseEntity message = null;
     	if(headerResp.contains("Basic")) {
     			String[] user =  new String(Base64.getDecoder().decode(headerResp.substring(6).getBytes())).split(":", 2);//decode the header and split into username and password
     			User u = findByUserName(user[0]);//find it by username
     			if(u!=null) {
     				if(new BCryptPasswordEncoder().matches(user[1], u.getPassword())) {//check for password match
-    					message= "Current time - "+new Date();
+    					message= new ResponseEntity("Current time - "+new Date(),HttpStatus.OK);
+    					
     				}
     				else {
-    					message="Credentials are not right";
+    					message=new ResponseEntity("Credentials are not right",HttpStatus.UNAUTHORIZED);
     				}
     			}
     			
     			else {
-    				message="User does not exist";
+    				message=new ResponseEntity("User does not exist", HttpStatus.UNAUTHORIZED);
     			}
     	}
     	else {
-    		message="User is not logged in";
+    		message=new ResponseEntity("User is not logged in", HttpStatus.UNAUTHORIZED) ;
     	}
     	return message;
     }

@@ -17,9 +17,9 @@ public class UserController {
 	private UserService userService;
 	
 	@GetMapping(value = "/", produces = "application/json")
-	public String basicAuth(HttpServletRequest req, HttpServletResponse resp) {
+	public ResponseEntity basicAuth(HttpServletRequest req, HttpServletResponse resp) {
 		String headerResp = req.getHeader("Authorization");
-		String message= userService.checkUserStatus(headerResp);
+		ResponseEntity message= userService.checkUserStatus(headerResp);
 		return message;
 	}
 
