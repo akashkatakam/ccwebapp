@@ -3,6 +3,7 @@ package edu.northeastern.ccwebapp.controller;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -17,9 +18,14 @@ public class BookController {
 	
 
     @PostMapping(value = "/book", produces = "application/json", consumes = "application/json" )
-    public ResponseEntity createBook(@RequestBody Book book, HttpServletRequest request) {
+    public ResponseEntity<?> createBook(@RequestBody Book book, HttpServletRequest request) {
     	
-    	ResponseEntity responseEntity = userController.basicAuth(request);
+    	ResponseEntity<?> responseEntity = userController.basicAuth(request);
     	return bookService.addBookDetails(book, responseEntity);	
+    }
+    
+    @GetMapping(value="/book", produces = "application/json" , consumes ="application/json")
+    public Iterable<Book> returnBookDetails(){
+    	return bookService.getBooks();
     }
 }

@@ -14,23 +14,21 @@ import edu.northeastern.ccwebapp.service.UserService;
 @RestController
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-
+	@Autowired
+	private UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping(value = "/", produces = "application/json")
-	public ResponseEntity basicAuth(HttpServletRequest req) {
+	public ResponseEntity<?> basicAuth(HttpServletRequest req) {
 		String headerResp = req.getHeader("Authorization");
         return userService.checkUserStatus(headerResp);
 	}
 
     @PostMapping(value = "/user/register", produces = "application/json" , consumes ="application/json" )
-    public ResponseEntity registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
         return userService.saveUser(user);
     }   
-
 }
