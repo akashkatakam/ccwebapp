@@ -6,20 +6,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.service.BookService;
+import edu.northeastern.ccwebapp.service.UserService;
 
+@RestController
 public class BookController {
 
 	@Autowired
 	private BookService bookService;
-	private UserController userController;
+	@Autowired
+	private UserService userService;
 	
-
     @PostMapping(value = "/book", produces = "application/json", consumes = "application/json" )
     public ResponseEntity<?> createBook(@RequestBody Book book, HttpServletRequest request) {
-    	
-    	ResponseEntity<?> responseEntity = userController.basicAuth(request);
+    	String headerResp = request.getHeader("Authorization");
+    	ResponseEntity<?> responseEntity = userService.checkUserStatus(headerResp);
     	return bookService.addBookDetails(book, responseEntity);	
     }
     

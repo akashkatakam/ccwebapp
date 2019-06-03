@@ -6,11 +6,13 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.repository.BookRepository;
 import org.springframework.web.bind.annotation.PathVariable;
 import javax.servlet.http.HttpServletRequest;
 
+@Service
 public class BookService {
 
 	@Autowired
