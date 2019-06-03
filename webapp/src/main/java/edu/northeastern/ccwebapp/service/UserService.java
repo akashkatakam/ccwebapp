@@ -42,7 +42,7 @@ public class UserService {
     			}
     	}
     	else {
-    		message=new ResponseEntity("User is not logged in", HttpStatus.UNAUTHORIZED) ;
+    		message=new ResponseEntity("User is not logged in", HttpStatus.BAD_REQUEST) ;
     	}
     	return message;
     }

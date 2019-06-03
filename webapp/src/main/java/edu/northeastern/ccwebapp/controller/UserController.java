@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.User;
-import edu.northeastern.ccwebapp.service.BookService;
 import edu.northeastern.ccwebapp.service.UserService;
 
 @RestController
