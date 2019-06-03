@@ -22,8 +22,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 	
-	public ResponseEntity checkUserStatus(String headerResp) {
-		ResponseEntity message;
+	public ResponseEntity<String> checkUserStatus(String headerResp) {
+		ResponseEntity<String> message;
     	if(headerResp.contains("Basic")) {
     			String[] user =  new String(Base64.getDecoder().decode(headerResp.substring(6).getBytes())).split(":", 2);//decode the header and split into username and password
     			User u = findByUserName(user[0]);//find it by username
@@ -42,7 +42,7 @@ public class UserService {
     			}
     	}
     	else {
-    		message=new ResponseEntity<>("User is not logged in", HttpStatus.UNAUTHORIZED) ;
+    		message=new ResponseEntity<>("User is not logged in", HttpStatus.BAD_REQUEST) ;
     	}
     	return message;
     }
@@ -77,7 +77,7 @@ public class UserService {
         return "success";
     }
 
-    public ResponseEntity saveUser(User user) {
+    public ResponseEntity<String> saveUser(User user) {
 
         String errorMessage = validateUser(user);
         if(errorMessage.equalsIgnoreCase("success")) {
