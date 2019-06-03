@@ -23,38 +23,38 @@ public class UserService {
     }
 	
 	public ResponseEntity checkUserStatus(String headerResp) {
-		ResponseEntity message = null;
+		ResponseEntity message;
     	if(headerResp.contains("Basic")) {
     			String[] user =  new String(Base64.getDecoder().decode(headerResp.substring(6).getBytes())).split(":", 2);//decode the header and split into username and password
     			User u = findByUserName(user[0]);//find it by username
     			if(u!=null) {
     				if(new BCryptPasswordEncoder().matches(user[1], u.getPassword())) {//check for password match
-    					message= new ResponseEntity("Current time - "+new Date(),HttpStatus.OK);
+    					message= new ResponseEntity<>("Current time - "+new Date(),HttpStatus.OK);
     					
     				}
     				else {
-    					message=new ResponseEntity("Credentials are not right",HttpStatus.UNAUTHORIZED);
+    					message=new ResponseEntity<>("Credentials are not right",HttpStatus.UNAUTHORIZED);
     				}
     			}
     			
     			else {
-    				message=new ResponseEntity("User does not exist", HttpStatus.UNAUTHORIZED);
+    				message=new ResponseEntity<>("User does not exist", HttpStatus.UNAUTHORIZED);
     			}
     	}
     	else {
-    		message=new ResponseEntity("User is not logged in", HttpStatus.UNAUTHORIZED) ;
+    		message=new ResponseEntity<>("User is not logged in", HttpStatus.UNAUTHORIZED) ;
     	}
     	return message;
     }
 
-    public String validateUser(User user) {
+    private String validateUser(User user) {
 
         if(user.getUsername() == null || user.getUsername().isEmpty() ||
                 user.getPassword() == null || user.getPassword().isEmpty()) {
             return "username and password cannot be empty.";
         }
 
-        String regExpression = "^([a-zA-Z0-9_.+-])+\\@(([a-zA-Z0-9-])+\\.)+([a-zA-Z0-9]{2,4})+$";
+        String regExpression = "^([a-zA-Z0-9_.+-])+@(([a-zA-Z0-9-])+\\.)+([a-zA-Z0-9]{2,4})+$";
         Pattern pattern = Pattern.compile(regExpression);
         Matcher matcher = pattern.matcher(user.getUsername());
 
@@ -88,18 +88,18 @@ public class UserService {
 
             User userByUsername = this.findByUserName(user.getUsername());
             if (userByUsername != null) {
-                return new ResponseEntity("Username already exist, please enter another one.", HttpStatus.CONFLICT);
+                return new ResponseEntity<>("Username already exist, please enter another one.", HttpStatus.CONFLICT);
             }
             userRepository.save(ud);
-            return new ResponseEntity("User registered successfully.", HttpStatus.OK);
+            return new ResponseEntity<>("User registered successfully.", HttpStatus.OK);
 
         } else {
-            return new ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
         }
 
     }
 
-    public User findByUserName(String username) {
+    private User findByUserName(String username) {
         return userRepository.findByUsername(username);
     }
 }
