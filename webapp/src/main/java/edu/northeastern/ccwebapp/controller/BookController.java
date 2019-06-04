@@ -33,7 +33,7 @@ public class BookController {
     	return bookService.addBookDetails(book, responseEntity);	
     }
     
-    @GetMapping(value="/book", produces = "application/json" , consumes ="application/json")
+    @GetMapping(value="/book", produces = "application/json")
     public ResponseEntity<?> returnBookDetails(HttpServletRequest request){
     	return bookService.getBooks(request);
     }
@@ -59,10 +59,14 @@ public class BookController {
         }else return responseEntity;
     }
     
-    @DeleteMapping(value = "/book/{id}", consumes = "application/json" )
+    @DeleteMapping(value = "/book/{id}" )
     public ResponseEntity<?> deleteBookById(@PathVariable("id") String id, HttpServletRequest request) {
     	String headerResp = request.getHeader("Authorization");
     	ResponseEntity<?> responseEntity = userService.checkUserStatus(headerResp);
-    	return bookService.deleteBook(id, responseEntity);
+    	HttpStatus status =responseEntity.getStatusCode();
+    	if(status.equals(HttpStatus.OK)){
+    	    return bookService.deleteBook(id);
+        }
+    	return bookService.deleteBook(id);
     }
 }
