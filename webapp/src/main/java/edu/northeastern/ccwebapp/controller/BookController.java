@@ -28,45 +28,45 @@ public class BookController {
 
     @PostMapping(value = "/book", produces = "application/json", consumes = "application/json" )
     public ResponseEntity<?> createBook(@RequestBody Book book, HttpServletRequest request) {
-    	String headerResp = request.getHeader("Authorization");
-    	ResponseEntity<?> responseEntity = userService.checkUserStatus(headerResp);
+    	ResponseEntity<?> responseEntity  = bookService.resultOfUserStatus(request);
     	return bookService.addBookDetails(book, responseEntity);	
     }
     
     @GetMapping(value="/book", produces = "application/json")
     public ResponseEntity<?> returnBookDetails(HttpServletRequest request){
-    	return bookService.getBooks(request);
+    	ResponseEntity<?> responseEntity  = bookService.resultOfUserStatus(request);
+    	return bookService.getBooks(responseEntity);
     }
 
     @GetMapping(value = "/book/{id}",produces = "application/json")
     public ResponseEntity<?> getBookById(@PathVariable String id, HttpServletRequest request){
-        String header = request.getHeader("Authorization");
-        ResponseEntity responseEntity =  userService.checkUserStatus(header);
+    	ResponseEntity<?> responseEntity  = bookService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
         if(status.equals(HttpStatus.OK)){
             return  bookService.getBook(id);
-        }else return  responseEntity;
-
+        } else {
+        	return  new ResponseEntity<>("User is not authorized to access the service.", HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @PutMapping(value = "/book/{id}",produces = "application/json",consumes = "application/json")
-    public ResponseEntity UpdateBook(@PathVariable("id") String id, @RequestBody Book book, HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        ResponseEntity responseEntity =  userService.checkUserStatus(header);
+    public ResponseEntity<?> UpdateBook(@PathVariable("id") String id, @RequestBody Book book, HttpServletRequest request) {
+    	ResponseEntity<?> responseEntity  = bookService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
         if(status.equals(HttpStatus.OK)){
             return bookService.updateBook(book,id);
-        }else return responseEntity;
+        } else {
+        	return responseEntity;
+        }
     }
     
     @DeleteMapping(value = "/book/{id}" )
     public ResponseEntity<?> deleteBookById(@PathVariable("id") String id, HttpServletRequest request) {
-    	String headerResp = request.getHeader("Authorization");
-    	ResponseEntity<?> responseEntity = userService.checkUserStatus(headerResp);
-    	HttpStatus status =responseEntity.getStatusCode();
+    	ResponseEntity<?> responseEntity  = bookService.resultOfUserStatus(request);
+    	HttpStatus status = responseEntity.getStatusCode();
     	if(status.equals(HttpStatus.OK)){
     	    return bookService.deleteBook(id);
         }
-    	return bookService.deleteBook(id);
+    	return new ResponseEntity<>("User is not authorized to access the service.", HttpStatus.UNAUTHORIZED);
     }
 }
