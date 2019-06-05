@@ -21,10 +21,10 @@ public class BookService {
 
     }
 
-    public ResponseEntity<Book> addBookDetails(Book book, ResponseEntity responseEntity) {
+    public ResponseEntity<?> addBookDetails(Book book, ResponseEntity<?> responseEntity) {
 
 		if(responseEntity.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("User is not authorized to access this service.", HttpStatus.UNAUTHORIZED);
 		}
 		else if (responseEntity.getStatusCode().equals(HttpStatus.OK)){
 			Book bookDetails = new Book();
@@ -34,28 +34,27 @@ public class BookService {
 			UUID uuid = UUID.randomUUID();
 			bookDetails.setUuid(uuid.toString());
 			bookDetails.setIsbn(book.getIsbn());
-			bookRepository.save(bookDetails);
+			this.save(bookDetails);
 			return new ResponseEntity<>(bookDetails, HttpStatus.CREATED);
 		}
 		else {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Not able to process the request.", HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	public ResponseEntity<Object> getBooks(HttpServletRequest request) {
-		String header = request.getHeader("Authorization");
+	public ResponseEntity<?> getBooks(ResponseEntity<?> responseEntity) {
+		
 		List<Book> bookDetails;
-		ResponseEntity<String> re =  userService.checkUserStatus(header);
-		HttpStatus status = re.getStatusCode();
+		HttpStatus status = responseEntity.getStatusCode();
 		if(status.equals(HttpStatus.OK)) {
 			bookDetails= bookRepository.findAll();
 			return new ResponseEntity<>(bookDetails, HttpStatus.OK);
 		}
 		else
-			return new ResponseEntity<>("Not authorized to access book details", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("User is not authorized to access book details", HttpStatus.UNAUTHORIZED);
 	}
 
-	public ResponseEntity getBook(String bookId) {
+	public ResponseEntity<?> getBook(String bookId) {
 			Book book = this.getBookById(bookId);
 			if(book == null){
 				return new ResponseEntity<>("Book with id " + bookId + " not found",HttpStatus.NOT_FOUND);
@@ -63,17 +62,17 @@ public class BookService {
 			return new ResponseEntity<>(book, HttpStatus.OK);
 	}
 
-	public ResponseEntity updateBook(Book book, String id){
+	public ResponseEntity<?> updateBook(Book book, String id){
         Book currentBook = this.getBookById(id);
-        if (currentBook == null) {
-            return new ResponseEntity<>("Unable to update Book, with id " + id + " not found.", HttpStatus.NOT_FOUND);
+        if (currentBook != null) {
+		    currentBook.setTitle(book.getTitle());
+		    currentBook.setAuthor(book.getAuthor());
+		    currentBook.setIsbn(book.getIsbn());
+		    currentBook.setQuantity(book.getQuantity());
+		    this.save(currentBook);
+		    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        currentBook.setTitle(book.getTitle());
-        currentBook.setAuthor(book.getAuthor());
-        currentBook.setIsbn(book.getIsbn());
-        currentBook.setQuantity(book.getQuantity());
-        this.save(currentBook);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Authenitication failed.", HttpStatus.UNAUTHORIZED);
     }
 
     private Book getBookById(String id){
@@ -87,16 +86,20 @@ public class BookService {
     
     public ResponseEntity<?> deleteBook(String id) {
 		Book currentBook = this.getBookById(id);
-		if (currentBook == null) {
-			return new ResponseEntity<>("Book with id " + id + " not found.", HttpStatus.NOT_FOUND);
-		}else {
+		if (currentBook != null) {
 			this.deleteBookById(id);
-			return new ResponseEntity<>("Deleted successfully!",HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
+		return new ResponseEntity<>("Authenitication failed.", HttpStatus.UNAUTHORIZED);
 	}
 
     private void deleteBookById(String id) {
     	bookRepository.deleteByUuid(id);
+    }
+    
+    public ResponseEntity<String> resultOfUserStatus(HttpServletRequest request) {
+    	String headerResp = request.getHeader("Authorization");
+    	return userService.checkUserStatus(headerResp);
     }
 }
 

@@ -10,4 +10,5 @@ public interface BookRepository extends CrudRepository<Book , Long>{
     List<Book> findAll();
     @Transactional
     void deleteByUuid(String id);
+    Book save(Book book);
 }

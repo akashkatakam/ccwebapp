@@ -15,34 +15,31 @@ import edu.northeastern.ccwebapp.repository.UserRepository;
 
 @Service
 public class UserService {
-	private UserRepository userRepository;
 	
 	@Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+	private UserRepository userRepository;
 	
 	public ResponseEntity<String> checkUserStatus(String headerResp) {
 		ResponseEntity<String> message;
-    	if(headerResp.contains("Basic")) {
-    			String[] user =  new String(Base64.getDecoder().decode(headerResp.substring(6).getBytes())).split(":", 2);//decode the header and split into username and password
-    			User u = findByUserName(user[0]);//find it by username
-    			if(u!=null) {
-    				if(new BCryptPasswordEncoder().matches(user[1], u.getPassword())) {//check for password match
-    					message= new ResponseEntity<>("Current time - "+new Date(),HttpStatus.OK);
+    	if(headerResp != null && headerResp.contains("Basic")) {
+    			String[] userDetails =  new String(Base64.getDecoder().decode(headerResp.substring(6).getBytes())).split(":", 2);//decode the header and split into username and password
+    			User user = findByUserName(userDetails[0]);//find it by username
+    			if(user != null) {
+    				if(new BCryptPasswordEncoder().matches(userDetails[1], user.getPassword())) {//check for password match
+    					message = new ResponseEntity<>("Current time - " + new Date(), HttpStatus.OK);
     					
     				}
     				else {
-    					message=new ResponseEntity<>("Credentials are not right",HttpStatus.UNAUTHORIZED);
+    					message = new ResponseEntity<>("Credentials are not right", HttpStatus.UNAUTHORIZED);
     				}
     			}
     			
     			else {
-    				message=new ResponseEntity<>("User does not exist", HttpStatus.UNAUTHORIZED);
+    				message = new ResponseEntity<>("User does not exist", HttpStatus.UNAUTHORIZED);
     			}
     	}
     	else {
-    		message=new ResponseEntity<>("User is not logged in", HttpStatus.BAD_REQUEST) ;
+    		message = new ResponseEntity<>("User is not logged in", HttpStatus.BAD_REQUEST) ;
     	}
     	return message;
     }
@@ -79,9 +76,9 @@ public class UserService {
 
     public ResponseEntity<String> saveUser(User user) {
 
-        String errorMessage = validateUser(user);
-        if(errorMessage.equalsIgnoreCase("success")) {
-
+        String responseMessage = validateUser(user);
+        
+        if(responseMessage.equalsIgnoreCase("success")) {
             User ud = new User();
             ud.setUsername(user.getUsername());
             ud.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
@@ -94,7 +91,7 @@ public class UserService {
             return new ResponseEntity<>("User registered successfully.", HttpStatus.OK);
 
         } else {
-            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
         }
 
     }
