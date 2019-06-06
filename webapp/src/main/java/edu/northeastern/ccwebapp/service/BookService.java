@@ -26,7 +26,7 @@ public class BookService {
     public ResponseEntity<?> addBookDetails(Book book) {
         ResponseMessage responseMessage = new ResponseMessage();
         Book bookDetails = new Book();
-        if (book.getTitle() == null && book.getAuthor() == null && book.getIsbn() == null) {
+        if (book.getTitle() != null && book.getAuthor() != null && book.getIsbn() != null) {
             bookDetails.setAuthor(book.getAuthor());
             bookDetails.setQuantity(book.getQuantity());
             bookDetails.setTitle(book.getTitle());

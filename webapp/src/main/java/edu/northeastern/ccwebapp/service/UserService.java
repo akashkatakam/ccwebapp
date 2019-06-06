@@ -66,7 +66,7 @@ public class UserService {
             return "Please enter a valid email address.";
         }
 
-        regExpression = "^[a-zA-Z0-9!$#@%^&*]\\w{8,18}$";
+        regExpression = "^[a-zA-Z0-9!$#@%^&_*]\\w{7,18}$";
         //"^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d-]{8,}$";
         /*The password's first character must be a letter, it must contain at least 4 characters and
         no more than 15 characters and no characters other than letters,
