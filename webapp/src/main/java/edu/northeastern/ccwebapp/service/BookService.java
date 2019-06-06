@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -101,7 +102,7 @@ public class BookService {
     	bookRepository.deleteByUuid(id);
     }
     
-    public ResponseEntity<String> resultOfUserStatus(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> resultOfUserStatus(HttpServletRequest request) {
     	String headerResp = request.getHeader("Authorization");
     	return userService.checkUserStatus(headerResp);
     }

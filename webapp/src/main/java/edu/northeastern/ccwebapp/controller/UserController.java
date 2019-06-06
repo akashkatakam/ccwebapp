@@ -1,5 +1,7 @@
 package edu.northeastern.ccwebapp.controller;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +24,13 @@ public class UserController {
     }
 
     @GetMapping(value = "/", produces = "application/json")
-	public ResponseEntity<?> basicAuth(HttpServletRequest req) {
+	public ResponseEntity<Map<String, String>> basicAuth(HttpServletRequest req) {
 		String headerResp = req.getHeader("Authorization");
         return userService.checkUserStatus(headerResp);
 	}
 
     @PostMapping(value = "/user/register", produces = "application/json" , consumes ="application/json" )
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) {
         return userService.saveUser(user);
     }   
 }
