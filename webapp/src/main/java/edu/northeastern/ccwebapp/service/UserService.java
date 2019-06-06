@@ -2,6 +2,8 @@ package edu.northeastern.ccwebapp.service;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,27 +21,33 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	public ResponseEntity<String> checkUserStatus(String headerResp) {
-		ResponseEntity<String> message;
+	public ResponseEntity<Map<String, String>> checkUserStatus(String headerResp) {
+		ResponseEntity<Map<String, String>> message;
+		Map<String, String> jsonResponse = new HashMap<String, String>();
+
     	if(headerResp != null && headerResp.contains("Basic")) {
     			String[] userDetails =  new String(Base64.getDecoder().decode(headerResp.substring(6).getBytes())).split(":", 2);//decode the header and split into username and password
     			User user = findByUserName(userDetails[0]);//find it by username
     			if(user != null) {
     				if(new BCryptPasswordEncoder().matches(userDetails[1], user.getPassword())) {//check for password match
-    					message = new ResponseEntity<>("Current time - " + new Date(), HttpStatus.OK);
+    					jsonResponse.put("message", "Current time - " + new Date());
+    					message = new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.OK);
     					
     				}
     				else {
-    					message = new ResponseEntity<>("Credentials are not right", HttpStatus.UNAUTHORIZED);
+    					jsonResponse.put("message", "Credentials are not right");
+    					message = new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.UNAUTHORIZED);
     				}
     			}
     			
     			else {
-    				message = new ResponseEntity<>("User does not exist", HttpStatus.UNAUTHORIZED);
+    				jsonResponse.put("message", "User does not exist");
+    				message = new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.UNAUTHORIZED);
     			}
     	}
     	else {
-    		message = new ResponseEntity<>("User is not logged in", HttpStatus.BAD_REQUEST) ;
+    		jsonResponse.put("message", "User is not logged in");
+    		message = new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.BAD_REQUEST) ;
     	}
     	return message;
     }
@@ -74,9 +82,10 @@ public class UserService {
         return "success";
     }
 
-    public ResponseEntity<String> saveUser(User user) {
+    public ResponseEntity<Map<String, String>> saveUser(User user) {
 
         String responseMessage = validateUser(user);
+        Map<String, String> jsonResponse = new HashMap<String, String>();
         
         if(responseMessage.equalsIgnoreCase("success")) {
             User ud = new User();
@@ -85,13 +94,16 @@ public class UserService {
 
             User userByUsername = this.findByUserName(user.getUsername());
             if (userByUsername != null) {
-                return new ResponseEntity<>("Username already exist, please enter another one.", HttpStatus.CONFLICT);
+            	jsonResponse.put("message", "Username already exist, please enter another one.");
+                return new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.CONFLICT);
             }
             userRepository.save(ud);
-            return new ResponseEntity<>("User registered successfully.", HttpStatus.OK);
+            jsonResponse.put("message", "User registered successfully.");
+            return new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.OK);
 
         } else {
-            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+        	jsonResponse.put("message", responseMessage);
+            return new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.BAD_REQUEST);
         }
 
     }
