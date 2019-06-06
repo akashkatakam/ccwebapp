@@ -9,7 +9,7 @@
 | Tanmayee Kalluri| 001400957 | kalluri.t@husky.neu.edu |
 
 ## Technology Stack
-
+Java, Spring Boot, MySQL, Maven
 
 ## Build Instructions
 
