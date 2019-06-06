@@ -21,7 +21,7 @@ public class BookController {
     public ResponseEntity<?> createBook(@RequestBody Book book, HttpServletRequest request) {
         ResponseEntity<?> responseEntity = bookService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
-        if (status.equals(HttpStatus.OK)) return bookService.addBookDetails(book, responseEntity);
+        if (status.equals(HttpStatus.OK)) return bookService.addBookDetails(book);
         else return responseEntity;
     }
 
@@ -37,31 +37,23 @@ public class BookController {
     public ResponseEntity<?> getBookById(@PathVariable String id, HttpServletRequest request) {
         ResponseEntity<?> responseEntity = bookService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
-        if (status.equals(HttpStatus.OK)) {
-            return bookService.getBook(id);
-        } else {
-            return new ResponseEntity<>("User is not authorized to access the service.", HttpStatus.UNAUTHORIZED);
-        }
+        if (status.equals(HttpStatus.OK)) return bookService.getBook(id);
+        else return responseEntity;
     }
 
     @PutMapping(value = "/book", produces = "application/json", consumes = "application/json")
     public ResponseEntity<?> UpdateBook(@RequestBody Book book, HttpServletRequest request) {
         ResponseEntity<?> responseEntity = bookService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
-        if (status.equals(HttpStatus.OK)) {
-            return bookService.updateBook(book);
-        } else {
-            return responseEntity;
-        }
+        if (status.equals(HttpStatus.OK)) return bookService.updateBook(book);
+        else return responseEntity;
     }
 
     @DeleteMapping(value = "/book/{id}")
     public ResponseEntity<?> deleteBookById(@PathVariable("id") String id, HttpServletRequest request) {
         ResponseEntity<?> responseEntity = bookService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
-        if (status.equals(HttpStatus.OK)) {
-            return bookService.deleteBook(id);
-        }
-        return new ResponseEntity<>("User is not authorized to access the service.", HttpStatus.UNAUTHORIZED);
+        if (status.equals(HttpStatus.OK)) return bookService.deleteBook(id);
+        else return responseEntity;
     }
 }

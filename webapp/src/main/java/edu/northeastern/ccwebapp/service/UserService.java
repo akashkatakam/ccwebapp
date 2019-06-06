@@ -36,7 +36,7 @@ public class UserService {
                     message = new ResponseEntity<>(responseMessage, HttpStatus.OK);
 
                 } else {
-                    responseMessage.setMessage("Credentials are not right");
+                    responseMessage.setMessage("Please enter valid credentials");
                     message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
                 }
             } else {
@@ -45,16 +45,17 @@ public class UserService {
             }
         } else {
             responseMessage.setMessage("User is not logged in");
-            message = new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
         }
         return message;
     }
 
     private String validateUser(User user) {
 
-        if (user.getUsername() == null || user.getUsername().isEmpty() ||
-                user.getPassword() == null || user.getPassword().isEmpty()) {
-            return "username and password cannot be empty.";
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            return "username is empty or json format is not correct";
+        } else if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            return "password is empty or json format is not correct";
         }
 
         String regExpression = "^([a-zA-Z0-9_.+-])+@(([a-zA-Z0-9-])+\\.)+([a-zA-Z0-9]{2,4})+$";
@@ -75,7 +76,7 @@ public class UserService {
         matcher = pattern.matcher(user.getPassword());
 
         if (!matcher.matches()) {
-            return "Please enter a valid password.";
+            return "Please enter a valid password of minimum length 8 characters";
         }
         return "success";
     }
