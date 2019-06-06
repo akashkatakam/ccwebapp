@@ -1,5 +1,9 @@
 package edu.northeastern.ccwebapp.pojo;
-import javax.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "book_details")
@@ -7,8 +11,8 @@ public class Book {
 
     @Id
     //@JsonIgnoreProperties
-    @Column(name = "uuid")
-    private String uuid;
+    @Column(name = "id")
+    private String id;
 
     @Column(name = "title")
     private String title;
@@ -22,12 +26,12 @@ public class Book {
     @Column(name = "isbn")
     private String isbn;
 
-    public String getUuid() {
-        return uuid;
+    public String getId() {
+        return id;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {

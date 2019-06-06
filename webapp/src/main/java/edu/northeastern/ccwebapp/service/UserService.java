@@ -1,60 +1,58 @@
 package edu.northeastern.ccwebapp.service;
 
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.northeastern.ccwebapp.Util.ResponseMessage;
+import edu.northeastern.ccwebapp.pojo.User;
+import edu.northeastern.ccwebapp.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import edu.northeastern.ccwebapp.pojo.User;
-import edu.northeastern.ccwebapp.repository.UserRepository;
+
+import java.util.Base64;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService {
-	
-	@Autowired
-	private UserRepository userRepository;
-	
-	public ResponseEntity<Map<String, String>> checkUserStatus(String headerResp) {
-		ResponseEntity<Map<String, String>> message;
-		Map<String, String> jsonResponse = new HashMap<String, String>();
 
-    	if(headerResp != null && headerResp.contains("Basic")) {
-    			String[] userDetails =  new String(Base64.getDecoder().decode(headerResp.substring(6).getBytes())).split(":", 2);//decode the header and split into username and password
-    			User user = findByUserName(userDetails[0]);//find it by username
-    			if(user != null) {
-    				if(new BCryptPasswordEncoder().matches(userDetails[1], user.getPassword())) {//check for password match
-    					jsonResponse.put("message", "Current time - " + new Date());
-    					message = new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.OK);
-    					
-    				}
-    				else {
-    					jsonResponse.put("message", "Credentials are not right");
-    					message = new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.UNAUTHORIZED);
-    				}
-    			}
-    			
-    			else {
-    				jsonResponse.put("message", "User does not exist");
-    				message = new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.UNAUTHORIZED);
-    			}
-    	}
-    	else {
-    		jsonResponse.put("message", "User is not logged in");
-    		message = new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.BAD_REQUEST) ;
-    	}
-    	return message;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public ResponseEntity checkUserStatus(String headerResp) {
+        ResponseMessage responseMessage = new ResponseMessage();
+        ResponseEntity message;
+
+        if (headerResp != null && headerResp.contains("Basic")) {
+            String[] userDetails = new String(Base64.getDecoder().decode(headerResp.substring(6).getBytes())).split(":", 2);//decode the header and split into username and password
+            User user = findByUserName(userDetails[0]);//find it by username
+            if (user != null) {
+                if (new BCryptPasswordEncoder().matches(userDetails[1], user.getPassword())) {//check for password match
+                    responseMessage.setMessage("Current time - " + new Date());
+                    message = new ResponseEntity<>(responseMessage, HttpStatus.OK);
+
+                } else {
+                    responseMessage.setMessage("Credentials are not right");
+                    message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
+                }
+            } else {
+                responseMessage.setMessage("User does not exist");
+                message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            responseMessage.setMessage("User is not logged in");
+            message = new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+        }
+        return message;
     }
 
     private String validateUser(User user) {
 
-        if(user.getUsername() == null || user.getUsername().isEmpty() ||
+        if (user.getUsername() == null || user.getUsername().isEmpty() ||
                 user.getPassword() == null || user.getPassword().isEmpty()) {
             return "username and password cannot be empty.";
         }
@@ -67,7 +65,7 @@ public class UserService {
             return "Please enter a valid email address.";
         }
 
-        regExpression = "^[a-zA-Z0-9]\\w{3,14}$";
+        regExpression = "^[a-zA-Z0-9!$#@%^&*]\\w{8,18}$";
         //"^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d-]{8,}$";
         /*The password's first character must be a letter, it must contain at least 4 characters and
         no more than 15 characters and no characters other than letters,
@@ -82,33 +80,32 @@ public class UserService {
         return "success";
     }
 
-    public ResponseEntity<Map<String, String>> saveUser(User user) {
-
+    public ResponseEntity saveUser(User user) {
+        ResponseMessage errorMessage = new ResponseMessage();
         String responseMessage = validateUser(user);
-        Map<String, String> jsonResponse = new HashMap<String, String>();
-        
-        if(responseMessage.equalsIgnoreCase("success")) {
+
+        if (responseMessage.equalsIgnoreCase("success")) {
             User ud = new User();
             ud.setUsername(user.getUsername());
             ud.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
 
             User userByUsername = this.findByUserName(user.getUsername());
             if (userByUsername != null) {
-            	jsonResponse.put("message", "Username already exist, please enter another one.");
-                return new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.CONFLICT);
+                errorMessage.setMessage("Username already exists!");
+                return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
             }
             userRepository.save(ud);
-            jsonResponse.put("message", "User registered successfully.");
-            return new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.OK);
+            errorMessage.setMessage("User registered successfully.");
+            return new ResponseEntity<>(errorMessage, HttpStatus.OK);
 
         } else {
-        	jsonResponse.put("message", responseMessage);
-            return new ResponseEntity<Map<String, String>>(jsonResponse, HttpStatus.BAD_REQUEST);
+            errorMessage.setMessage(responseMessage);
+            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
         }
 
     }
 
-    private User findByUserName(String username) {
+    public User findByUserName(String username) {
         return userRepository.findByUsername(username);
     }
 }
