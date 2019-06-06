@@ -12,12 +12,16 @@ import java.util.UUID;
 @Service
 public class BookService {
 
-	private final UserService userService;
+	private UserService userService;
 	private BookRepository bookRepository;
 
     public BookService(UserService userService,BookRepository bookRepository) {
         this.userService = userService;
         this.bookRepository = bookRepository;
+
+    }
+    
+    public BookService() {
 
     }
 
@@ -75,7 +79,7 @@ public class BookService {
         return new ResponseEntity<>("Authenitication failed.", HttpStatus.UNAUTHORIZED);
     }
 
-    private Book getBookById(String id){
+    public Book getBookById(String id){
         return bookRepository.findByUuid(id);
     }
 
