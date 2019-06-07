@@ -61,7 +61,7 @@ public class BookService {
         ResponseMessage responseMessage = new ResponseMessage();
         Book currentBook = this.getBookById(book.getId());
         if (currentBook != null) {
-            if (currentBook.getAuthor() == null && currentBook.getTitle() == null) {
+            if (book.getAuthor() == null || book.getTitle() == null) {
                 responseMessage.setMessage("Invalid tittle/Author or an invalid Json format");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
             }
