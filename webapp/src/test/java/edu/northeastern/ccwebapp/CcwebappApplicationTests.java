@@ -3,7 +3,6 @@ package edu.northeastern.ccwebapp;
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.User;
 import edu.northeastern.ccwebapp.repository.BookRepository;
-import edu.northeastern.ccwebapp.repository.UserRepository;
 import edu.northeastern.ccwebapp.service.BookService;
 import edu.northeastern.ccwebapp.service.UserService;
 import org.junit.Before;
@@ -13,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
