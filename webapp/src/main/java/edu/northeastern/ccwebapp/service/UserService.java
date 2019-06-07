@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -108,5 +109,10 @@ public class UserService {
 
     public User findByUserName(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public ResponseEntity resultOfUserStatus(HttpServletRequest request) {
+        String headerResp = request.getHeader("Authorization");
+        return this.checkUserStatus(headerResp);
     }
 }

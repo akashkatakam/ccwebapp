@@ -7,18 +7,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class BookService {
 
-    private UserService userService;
     private BookRepository bookRepository;
 
-    public BookService(UserService userService, BookRepository bookRepository) {
-        this.userService = userService;
+    public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
 
     }
@@ -103,9 +100,5 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public ResponseEntity resultOfUserStatus(HttpServletRequest request) {
-        String headerResp = request.getHeader("Authorization");
-        return userService.checkUserStatus(headerResp);
-    }
 }
 
