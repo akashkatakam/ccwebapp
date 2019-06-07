@@ -10,7 +10,6 @@ import javax.persistence.Table;
 public class Book {
 
     @Id
-    //@JsonIgnoreProperties
     @Column(name = "id")
     private String id;
 

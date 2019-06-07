@@ -23,14 +23,10 @@ public class BookService {
 
     }
 
-    public ResponseEntity<?> addBookDetails(Book book, ResponseEntity<?> responseEntity) {
+    public ResponseEntity<?> addBookDetails(Book book) {
         ResponseMessage responseMessage = new ResponseMessage();
-
-        if (responseEntity.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
-            responseMessage.setMessage("User is not authorized to access this service");
-            return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
-        } else if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-            Book bookDetails = new Book();
+        Book bookDetails = new Book();
+        if (book.getTitle() != null && book.getAuthor() != null && book.getIsbn() != null) {
             bookDetails.setAuthor(book.getAuthor());
             bookDetails.setQuantity(book.getQuantity());
             bookDetails.setTitle(book.getTitle());
@@ -40,13 +36,12 @@ public class BookService {
             this.save(bookDetails);
             return new ResponseEntity<>(bookDetails, HttpStatus.CREATED);
         } else {
-            responseMessage.setMessage("Not able to process the request");
+            responseMessage.setMessage("Invalid Title/ Author or Invalid JSON");
             return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
         }
     }
 
     public ResponseEntity<?> getBooks() {
-        ResponseMessage responseMessage = new ResponseMessage();
         List<Book> bookDetails;
         bookDetails = bookRepository.findAll();
         return new ResponseEntity<>(bookDetails, HttpStatus.OK);
@@ -66,6 +61,10 @@ public class BookService {
         ResponseMessage responseMessage = new ResponseMessage();
         Book currentBook = this.getBookById(book.getId());
         if (currentBook != null) {
+            if (currentBook.getAuthor() == null && currentBook.getTitle() == null) {
+                responseMessage.setMessage("Invalid tittle/Author or an invalid Json format");
+                return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            }
             currentBook.setTitle(book.getTitle());
             currentBook.setAuthor(book.getAuthor());
             currentBook.setIsbn(book.getIsbn());
@@ -73,9 +72,9 @@ public class BookService {
             this.save(currentBook);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            responseMessage.setMessage("Book with id" + book.getId() + " not found");
+            responseMessage.setMessage("Book with id " + book.getId() + " not found");
+            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
     }
 
     private Book getBookById(String id) {
