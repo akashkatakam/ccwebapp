@@ -37,7 +37,7 @@ public class BookService {
             this.save(bookDetails);
             return new ResponseEntity<>(bookDetails, HttpStatus.CREATED);
         } else {
-            responseMessage.setMessage("Invalid Title/ Author or Invalid JSON");
+            responseMessage.setMessage("Invalid Title/ Author or Invalid JSON.");
             return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
         }
     }
@@ -64,7 +64,7 @@ public class BookService {
         if (currentBook != null) {
             if (book.getAuthor() == null || book.getTitle() == null ||
             		book.getIsbn() == null || book.getQuantity() <= 0) {
-                responseMessage.setMessage("Invalid tittle/Author or an invalid Json format");
+                responseMessage.setMessage("Invalid tittle/Author or an invalid Json format.");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
             }
             currentBook.setTitle(book.getTitle());
