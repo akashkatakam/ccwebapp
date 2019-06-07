@@ -79,11 +79,11 @@ public class BookService {
         }
     }
 
-    private Book getBookById(String id) {
+    public Book getBookById(String id) {
         return bookRepository.findById(id);
     }
 
-    private void save(Book book) {
+    public void save(Book book) {
         bookRepository.save(book);
     }
 
