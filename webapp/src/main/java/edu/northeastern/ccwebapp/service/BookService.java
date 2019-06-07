@@ -26,7 +26,8 @@ public class BookService {
     public ResponseEntity<?> addBookDetails(Book book) {
         ResponseMessage responseMessage = new ResponseMessage();
         Book bookDetails = new Book();
-        if (book.getTitle() != null && book.getAuthor() != null && book.getIsbn() != null) {
+        if (book.getTitle() != null && book.getAuthor() != null && book.getIsbn() != null
+        		&& book.getQuantity() > 0) {
             bookDetails.setAuthor(book.getAuthor());
             bookDetails.setQuantity(book.getQuantity());
             bookDetails.setTitle(book.getTitle());
@@ -61,7 +62,8 @@ public class BookService {
         ResponseMessage responseMessage = new ResponseMessage();
         Book currentBook = this.getBookById(book.getId());
         if (currentBook != null) {
-            if (book.getAuthor() == null || book.getTitle() == null) {
+            if (book.getAuthor() == null || book.getTitle() == null ||
+            		book.getIsbn() == null || book.getQuantity() <= 0) {
                 responseMessage.setMessage("Invalid tittle/Author or an invalid Json format");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
             }
