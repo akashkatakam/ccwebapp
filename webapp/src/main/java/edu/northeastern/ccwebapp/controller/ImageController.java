@@ -53,7 +53,7 @@ public class ImageController {
 		return responseEntity;
 	}
 	
-	@DeleteMapping(value="/book/{id}/image/{idImage}", produces="application/json")
+	@DeleteMapping(value="/book/{idBook}/image/{idImage}", produces="application/json")
 	public ResponseEntity<?> removeBookImageDetails(@PathVariable String idBook, @PathVariable String idImage, HttpServletRequest request) {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
 		if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
