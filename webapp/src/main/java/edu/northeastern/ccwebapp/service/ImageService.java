@@ -1,28 +1,26 @@
 package edu.northeastern.ccwebapp.service;
 
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.northeastern.ccwebapp.Util.ResponseMessage;
+import edu.northeastern.ccwebapp.pojo.Book;
+import edu.northeastern.ccwebapp.pojo.Image;
+import edu.northeastern.ccwebapp.repository.ImageRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import edu.northeastern.ccwebapp.Util.ResponseMessage;
-import edu.northeastern.ccwebapp.pojo.Book;
-import edu.northeastern.ccwebapp.pojo.Image;
-import edu.northeastern.ccwebapp.repository.BookRepository;
-import edu.northeastern.ccwebapp.repository.ImageRepository;
+import java.util.UUID;
 
 @Service
 public class ImageService {
 
-	@Autowired
-	private ImageRepository imageRepository;
-	@Autowired
-	private BookService bookService;
-	@Autowired
-	private BookRepository bookRepository;
+	private final ImageRepository imageRepository;
+	private final BookService bookService;
+
+	public ImageService(ImageRepository imageRepository, BookService bookService) {
+		this.imageRepository = imageRepository;
+		this.bookService = bookService;
+	}
 
 	public ResponseEntity<?> createImageAttachment(String idBook, MultipartFile file) {
 		Image image = new Image();
@@ -31,11 +29,11 @@ public class ImageService {
 		// To-do: instead of name need to add local path of file
 		String path = file.getOriginalFilename();
 		image.setUrl(path);
-		imageRepository.save(image);
+		this.saveImage(image);
 		Book book = bookService.getBookById(idBook);
 		if (book != null) {
 			book.setImage(image);
-			bookRepository.save(book);
+			bookService.save(book);
 			return new ResponseEntity<>(image, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -45,10 +43,40 @@ public class ImageService {
 		return new ResponseEntity<>(imageRepository.findById(imageId), HttpStatus.OK);
 	}
 
+	public ResponseEntity<ResponseMessage> updateBook(String bookId, String imageId, MultipartFile file) {
+		Book currentBook;
+		Image currentImage;
+		ResponseMessage responseMessage = new ResponseMessage();
+		currentBook = bookService.getBookById(bookId);
+		if (currentBook == null) {
+			responseMessage.setMessage("Book with " + bookId + "Not found");
+			return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
+		} else {
+			currentImage = this.getImageById(imageId);
+			if (currentImage == null) {
+				responseMessage.setMessage("Image with id" + imageId + "Not Found");
+				return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
+			} else {
+				this.saveImage();
+			}
+		}
+	}
+
 	public ResponseEntity<?> deleteBookDetails(String idBook, String idImage) {
 		ResponseMessage responseMessage = new ResponseMessage();
 		imageRepository.deleteById(idImage);
 		responseMessage.setMessage("Image deleted successfully");
 		return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+	}
+
+	private Image getImageById(String imageId) {
+		return imageRepository.findById(imageId);
+	}
+
+	private void saveImage(Image image) {
+		Image newImage = new Image();
+		newImage.setId(image.getId());
+		newImage.setUrl(image.getUrl());
+		imageRepository.save(image);
 	}
 }

@@ -1,11 +1,14 @@
 package edu.northeastern.ccwebapp.repository;
 
-import java.util.List;
-
+import edu.northeastern.ccwebapp.pojo.Image;
 import org.springframework.data.repository.CrudRepository;
 
-import edu.northeastern.ccwebapp.pojo.Image;
+import java.util.List;
 
-public interface ImageRepository extends CrudRepository<Image, String>{
+public interface ImageRepository extends CrudRepository<Image, Long> {
 	List<Image> findAll();
+
+	Image findById(String imageId);
+
+	Image deleteById(String imageId);
 }
