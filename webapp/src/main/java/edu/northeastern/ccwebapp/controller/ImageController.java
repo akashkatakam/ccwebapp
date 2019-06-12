@@ -47,13 +47,13 @@ public class ImageController {
 		return responseEntity;
 	}
 	
-	@PutMapping(value="/book/{id}/image/{idImage}", produces="application/json")
+	@PutMapping(value="/book/{idBook}/image/{idImage}", produces="application/json")
 	public ResponseEntity<?> modifyBookImageDetails(@PathVariable String idBook, @PathVariable String idImage, HttpServletRequest request) {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
 		return responseEntity;
 	}
 	
-	@DeleteMapping(value="/book/{idBook}/image/{idImage}", produces="application/json")
+	@DeleteMapping(value="/book/{idBook}/image/{idImage}")
 	public ResponseEntity<?> removeBookImageDetails(@PathVariable String idBook, @PathVariable String idImage, HttpServletRequest request) {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
 		if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
