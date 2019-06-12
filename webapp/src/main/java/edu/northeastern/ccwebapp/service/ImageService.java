@@ -9,74 +9,104 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ImageService {
 
-	private final ImageRepository imageRepository;
-	private final BookService bookService;
+    private static final String imagePath = System.getProperty("user.home") + "/Pictures/";
 
+    private ImageRepository imageRepository;
+    private BookService bookService;
+	
 	public ImageService(ImageRepository imageRepository, BookService bookService) {
 		this.imageRepository = imageRepository;
 		this.bookService = bookService;
 	}
 
-	public ResponseEntity<?> createImageAttachment(String idBook, MultipartFile file) {
-		Image image = new Image();
-		UUID id = UUID.randomUUID();
-		image.setId(id.toString());
-		// To-do: instead of name need to add local path of file
-		String path = file.getOriginalFilename();
-		image.setUrl(path);
-		this.saveImage(image);
-		Book book = bookService.getBookById(idBook);
+    public ResponseEntity<?> createCoverPage(String bookId, MultipartFile file) {
+        ResponseMessage responseMessage = new ResponseMessage();
+        Book book = bookService.getBookById(bookId);
 		if (book != null) {
-			book.setImage(image);
-			bookService.save(book);
-			return new ResponseEntity<>(image, HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	}
+            try {
+                Image image = new Image();
+                String pathURL = imagePath + Instant.now() + "___" + file.getOriginalFilename();
+                UUID id = UUID.randomUUID();
+                image.setId(id.toString());
+                image.setUrl(pathURL);
+                File directory = new File(pathURL);
+                file.transferTo(directory);
+                updateBookByAddingGivenImage(image, book);
+                return new ResponseEntity<>(image, HttpStatus.OK);
+            } catch (IOException e) {
+                responseMessage.setMessage("Error in path not found" + e);
+                e.printStackTrace();
+                return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            }
+        }
+        responseMessage.setMessage("Book with id " + bookId + " not found");
+        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+    }
 
-	public ResponseEntity<?> getBookDetails(String bookId, String imageId) {
-		return new ResponseEntity<>(imageRepository.findById(imageId), HttpStatus.OK);
-	}
-
-	public ResponseEntity<ResponseMessage> updateBook(String bookId, String imageId, MultipartFile file) {
-		Book currentBook;
-		Image currentImage;
+    public ResponseEntity<?> getCoverPage(String bookId, String imageId) {
 		ResponseMessage responseMessage = new ResponseMessage();
-		currentBook = bookService.getBookById(bookId);
-		if (currentBook == null) {
-			responseMessage.setMessage("Book with " + bookId + "Not found");
-			return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
-		} else {
-			currentImage = this.getImageById(imageId);
-			if (currentImage == null) {
-				responseMessage.setMessage("Image with id" + imageId + "Not Found");
-				return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
-			} else {
-				this.saveImage();
-			}
-		}
-	}
+        Book book = bookService.getBookById(bookId);
+        if (book != null && book.getImage().getId().equals(imageId)) {
+            return new ResponseEntity<>(imageRepository.findById(imageId), HttpStatus.OK);
+        }
+        responseMessage.setMessage("Either book not found or given image does not exists in book.");
+        return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
+    }
 
-	public ResponseEntity<?> deleteBookDetails(String idBook, String idImage) {
+    public ResponseEntity<?> deleteCoverPage(String bookId, String imageId) {
 		ResponseMessage responseMessage = new ResponseMessage();
-		imageRepository.deleteById(idImage);
-		responseMessage.setMessage("Image deleted successfully");
-		return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-	}
+        Book book = bookService.getBookById(bookId);
+        if (book != null && book.getImage().getId().equals(imageId)) {
+            updateBookByAddingGivenImage(null, book);
+            imageRepository.deleteById(imageId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        responseMessage.setMessage("Either book not found or given image is not the cover page of the book.");
+        return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
+    }
 
-	private Image getImageById(String imageId) {
-		return imageRepository.findById(imageId);
-	}
+    public ResponseEntity updateCoverPage(String bookId, String imageId, MultipartFile file) {
+        ResponseMessage responseMessage = new ResponseMessage();
+        Book currentBook = bookService.getBookById(bookId);
+        Optional<Image> currentImage = imageRepository.findById(imageId);
 
-	private void saveImage(Image image) {
-		Image newImage = new Image();
-		newImage.setId(image.getId());
-		newImage.setUrl(image.getUrl());
-		imageRepository.save(image);
+        if (currentBook != null) {
+            if (currentImage.isPresent()) {
+                if (currentBook.getImage().getId().equals(imageId)) {
+                    try {
+                        String pathURL = imagePath + Instant.now() + "___" + file.getOriginalFilename();
+                        File directory = new File(pathURL);
+                        currentBook.getImage().setUrl(pathURL);
+                        imageRepository.save(currentBook.getImage());
+                        file.transferTo(directory);
+                        return new ResponseEntity(HttpStatus.NO_CONTENT);
+                    } catch (IOException e) {
+                        responseMessage.setMessage("Error in path not found" + e);
+                        e.printStackTrace();
+                        return new ResponseEntity(responseMessage, HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    responseMessage.setMessage("Image with id " + imageId + " not found");
+                    return new ResponseEntity(responseMessage, HttpStatus.NOT_FOUND);
+                }
+            }
+        }
+        responseMessage.setMessage("Book with id " + bookId + " not found");
+        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    private void updateBookByAddingGivenImage(Image image, Book book) {
+        imageRepository.save(image);
+        book.setImage(image);
+        bookService.save(book);
 	}
 }

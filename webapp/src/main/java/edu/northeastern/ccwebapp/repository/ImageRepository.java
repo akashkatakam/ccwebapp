@@ -4,11 +4,12 @@ import edu.northeastern.ccwebapp.pojo.Image;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface ImageRepository extends CrudRepository<Image, Long> {
+public interface ImageRepository extends CrudRepository<Image, String> {
 	List<Image> findAll();
 
-	Image findById(String imageId);
+    Optional<Image> findById(String id);
 
-	Image deleteById(String imageId);
+    void deleteById(String id);
 }
