@@ -53,7 +53,8 @@ echo "Association ID - "$assc3 " for associating route table "$RouteTableId" wit
 
 echo "Adding a public route in the route table with destination CIDR block 0.0.0.0/0 and internet gateway as the target..."
 
-aws ec2 create-route --route-table-id $RouteTableId --destination-cidr-block 0.0.0.0/0 --gateway-id $InternetGatewayId|grep true
+aws ec2 create-route --route-table-id $RouteTableId --destination-cidr-block 0.0.0.0/0 --gateway-id $Internate_Gateway_Id
+
 
 echo "SUCCESS"
 
