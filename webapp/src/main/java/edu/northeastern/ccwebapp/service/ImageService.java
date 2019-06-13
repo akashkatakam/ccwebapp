@@ -55,26 +55,44 @@ public class ImageService {
     public ResponseEntity<?> getCoverPage(String bookId, String imageId) {
 		ResponseMessage responseMessage = new ResponseMessage();
         Book book = bookService.getBookById(bookId);
-        if (book != null && book.getImage().getId().equals(imageId)) {
-            return new ResponseEntity<>(imageRepository.findById(imageId), HttpStatus.OK);
+        if(book != null) {
+        	if(book.getImage() != null) {
+        		if(book.getImage().getId().equals(imageId)) {
+        			return new ResponseEntity<>(imageRepository.findById(imageId), HttpStatus.OK);
+        		} else {
+        			responseMessage.setMessage("Image with mentioned id does not match with book's image id..");
+        		}
+        	} else {
+        		responseMessage.setMessage("Image with mentioned id does not exists.");
+        	}
+        } else {
+        	responseMessage.setMessage("Book with mentioned id does not exists.");
         }
-        responseMessage.setMessage("Either book not found or given image does not exists in book.");
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
     }
 
     public ResponseEntity<?> deleteCoverPage(String bookId, String imageId) {
 		ResponseMessage responseMessage = new ResponseMessage();
         Book book = bookService.getBookById(bookId);
-        if (book != null && book.getImage().getId().equals(imageId)) {
-            updateBookByAddingGivenImage(null, book);
-            imageRepository.deleteById(imageId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if(book != null) {
+        	if(book.getImage() != null) {
+        		if(book.getImage().getId().equals(imageId)) {
+        			updateBookByAddingGivenImage(null, book);
+                	imageRepository.deleteById(imageId);
+                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        		} else {
+        			responseMessage.setMessage("Image with mentioned id does not match with book's image id..");
+        		}
+        	} else {
+        		responseMessage.setMessage("Image with mentioned id does not exists.");
+        	}
+        } else {
+        	responseMessage.setMessage("Book with mentioned id does not exists.");
         }
-        responseMessage.setMessage("Either book not found or given image is not the cover page of the book.");
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
     }
-
-    public ResponseEntity updateCoverPage(String bookId, String imageId, MultipartFile file) {
+    
+    public ResponseEntity<?> updateCoverPage(String bookId, String imageId, MultipartFile file) {
         ResponseMessage responseMessage = new ResponseMessage();
         Book currentBook = bookService.getBookById(bookId);
         Optional<Image> currentImage = imageRepository.findById(imageId);
@@ -88,24 +106,28 @@ public class ImageService {
                         currentBook.getImage().setUrl(pathURL);
                         imageRepository.save(currentBook.getImage());
                         file.transferTo(directory);
-                        return new ResponseEntity(HttpStatus.NO_CONTENT);
+                        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     } catch (IOException e) {
                         responseMessage.setMessage("Error in path not found" + e);
                         e.printStackTrace();
-                        return new ResponseEntity(responseMessage, HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
                     }
                 } else {
-                    responseMessage.setMessage("Image with id " + imageId + " not found");
-                    return new ResponseEntity(responseMessage, HttpStatus.NOT_FOUND);
+                    responseMessage.setMessage("Image with id " + imageId + " not found in mentioned book.");
                 }
+            } else {
+            	responseMessage.setMessage("Image with id " + imageId + " not found");
             }
+        } else {
+        	responseMessage.setMessage("Book with id " + bookId + " not found");
         }
-        responseMessage.setMessage("Book with id " + bookId + " not found");
-        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
     }
 
     private void updateBookByAddingGivenImage(Image image, Book book) {
-        imageRepository.save(image);
+        if(image != null) {
+        	imageRepository.save(image);
+        }
         book.setImage(image);
         bookService.save(book);
 	}
