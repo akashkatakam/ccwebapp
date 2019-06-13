@@ -28,12 +28,31 @@ echo "Subnet 3 created with subnet id" $subnet_3_Id
 
 aws ec2 create-tags --resources $subnet_3_Id --tags Key=Name,Value=Subnet_3_AwsCli
 
-echo "Internet Gateway creation in progress...."
+echo "Internet Gateway creation in progress..."
 Internate_Gateway_Id=$(aws ec2 create-internet-gateway| grep InternetGatewayId|cut -d'"' -f4)
 echo "Internet Gateway created with id" $Internate_Gateway_Id
 
 aws ec2 create-tags --resources $Internate_Gateway_Id --tags Key=Name,Value=InternateGateway_AwsCli
 
-echo "Attach Internet Gateway to VPC........."
-aws ec2 attach-internet-gateway --vpc-id $VpcId --internet-gateway-id $Internate_Gateway_Id
+echo "Attaching Internet Gateway to VPC..."
+aws ec2 attach-internet-gateway --vpc-id $VpcId --internet-gateway-id $Internate_Gateway_Id --vpc-id $VpcId
 
+echo "Creating RouteTable..."
+RouteTableId=$(aws ec2 create-route-table --vpc-id $VpcId | grep RouteTableId | cut -d'"' -f4)
+echo "RouteTable create with id "$RouteTableId
+
+echo "Associating route table to each subnet..."
+assc1=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_1_Id|grep AssociationId|cut -d'"' -f4)
+echo "Association ID - "$assc1 " for associating route table "$RouteTableId" with "$subnet_1_Id
+
+assc2=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_2_Id|grep AssociationId|cut -d'"' -f4)
+echo "Association ID - "$assc2 " for associating route table "$RouteTableId" with "$subnet_2_Id
+
+assc3=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_3_Id|grep AssociationId|cut -d'"' -f4)
+echo "Association ID - "$assc3 " for associating route table "$RouteTableId" with "$subnet_3_Id
+
+echo "Adding a public route in the route table with destination CIDR block 0.0.0.0/0 and internet gateway as the target..."
+
+aws ec2 create-route --route-table-id $RouteTableId --destination-cidr-block 0.0.0.0/0 --gateway-id $Internate_Gateway_Id
+
+echo "SUCCESS"
