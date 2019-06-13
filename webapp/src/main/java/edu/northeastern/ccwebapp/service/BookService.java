@@ -68,7 +68,7 @@ public class BookService {
             currentBook.setAuthor(book.getAuthor());
             currentBook.setIsbn(book.getIsbn());
             currentBook.setQuantity(book.getQuantity());
-            this.save(currentBook);
+            save(currentBook);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             responseMessage.setMessage("Book with id " + book.getId() + " not found");
