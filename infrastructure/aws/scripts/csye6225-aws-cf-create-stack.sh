@@ -51,6 +51,11 @@ echo "Association ID - "$assc2 " for associating "$RouteTableId" with "$subnet_2
 assc3=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_3_Id|grep AssociationId|cut -d'"' -f4)
 echo "Association ID - "$assc3 " for associating "$RouteTableId" with "$subnet_3_Id
 
+echo "Adding a public route in the route table with destination CIDR block 0.0.0.0/0 and internet gateway as the target..."
+
+aws create-route --route-table-id $RouteTableId --destination-cidr-block 0.0.0.0/0 --gateway-id $InternetGatewayId|grep true
+
+echo "SUCCESS"
 
 
 
