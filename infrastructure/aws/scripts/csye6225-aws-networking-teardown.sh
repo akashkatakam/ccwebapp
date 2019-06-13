@@ -59,12 +59,6 @@ echo "Fetched Route Table with ID: "$RouteTableId
 echo "Deleting public gateway route from route table"
 aws ec2 delete-route --route-table-id $RouteTableId --destination-cidr-block 0.0.0.0/0
 
-
-
-
-
-
-
 echo "Detaching Internet Gateway from VPC......"
 aws ec2 detach-internet-gateway --internet-gateway-id $InternetGatewayId --vpc-id $VpcId
 
