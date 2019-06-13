@@ -21,3 +21,15 @@ echo "Gateway ID-"$InternetGatewayId
 echo "Fetching route table..."
 RouteTableId=$(aws ec2 describe-route-tables --filter "Name=route.gateway-id,Values=$InternetGatewayId"|grep -m 1 RouteTableId|cut -d'"' -f4)
 echo "Route Table ID-"$RouteTableId
+
+echo "Deleting public gateway route..."
+aws ec2 delete-route --route-table-id $RouteTableId --destination-cidr-block 0.0.0.0/0
+
+asscId1=$(aws ec2 describe-route-tables --filter "Name=route.gateway-id,Values=$InternetGatewayId" --query 'RouteTables[0].Associations[0]'|grep RouteTableAssociationId|cut -d'"' -f4)
+echo $asscId1
+
+echo "Removing the association between the first subnet and the route table..."
+#aws ec2 disassociate-route-table --association-id=$asscId1
+
+
+
