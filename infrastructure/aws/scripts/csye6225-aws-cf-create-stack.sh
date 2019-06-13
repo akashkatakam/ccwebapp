@@ -41,3 +41,19 @@ echo "Creating RouteTable..."
 RouteTableId=$(aws ec2 create-route-table --vpc-id $VpcId | grep RouteTableId | cut -d'"' -f4)
 echo "RouteTable create with id "$RouteTableId
 
+echo "Associating route table to each subnet..."
+assc1=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_1_Id|grep AssociationId|cut -d'"' -f4)
+echo "Association ID - "$assc1 " for associating "$RouteTableId" with "$subnet_1_Id
+
+assc2=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_2_Id|grep AssociationId|cut -d'"' -f4)
+echo "Association ID - "$assc2 " for associating "$RouteTableId" with "$subnet_2_Id
+
+assc3=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_3_Id|grep AssociationId|cut -d'"' -f4)
+echo "Association ID - "$assc3 " for associating "$RouteTableId" with "$subnet_3_Id
+
+
+
+
+
+
+
