@@ -43,17 +43,17 @@ echo "RouteTable create with id "$RouteTableId
 
 echo "Associating route table to each subnet..."
 assc1=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_1_Id|grep AssociationId|cut -d'"' -f4)
-echo "Association ID - "$assc1 " for associating "$RouteTableId" with "$subnet_1_Id
+echo "Association ID - "$assc1 " for associating route table "$RouteTableId" with "$subnet_1_Id
 
 assc2=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_2_Id|grep AssociationId|cut -d'"' -f4)
-echo "Association ID - "$assc2 " for associating "$RouteTableId" with "$subnet_2_Id
+echo "Association ID - "$assc2 " for associating route table "$RouteTableId" with "$subnet_2_Id
 
 assc3=$(aws ec2 associate-route-table --route-table-id $RouteTableId --subnet-id $subnet_3_Id|grep AssociationId|cut -d'"' -f4)
-echo "Association ID - "$assc3 " for associating "$RouteTableId" with "$subnet_3_Id
+echo "Association ID - "$assc3 " for associating route table "$RouteTableId" with "$subnet_3_Id
 
 echo "Adding a public route in the route table with destination CIDR block 0.0.0.0/0 and internet gateway as the target..."
 
-aws create-route --route-table-id $RouteTableId --destination-cidr-block 0.0.0.0/0 --gateway-id $InternetGatewayId|grep true
+aws ec2 create-route --route-table-id $RouteTableId --destination-cidr-block 0.0.0.0/0 --gateway-id $InternetGatewayId|grep true
 
 echo "SUCCESS"
 
