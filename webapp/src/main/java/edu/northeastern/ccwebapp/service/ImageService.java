@@ -32,19 +32,24 @@ public class ImageService {
         ResponseMessage responseMessage = new ResponseMessage();
         Book book = bookService.getBookById(bookId);
 		if (book != null) {
-            try {
-                Image image = new Image();
-                String pathURL = imagePath + Instant.now() + "___" + file.getOriginalFilename();
-                UUID id = UUID.randomUUID();
-                image.setId(id.toString());
-                image.setUrl(pathURL);
-                File directory = new File(pathURL);
-                file.transferTo(directory);
-                updateBookByAddingGivenImage(image, book);
-                return new ResponseEntity<>(image, HttpStatus.OK);
-            } catch (IOException e) {
-                responseMessage.setMessage("Error in path not found" + e);
-                e.printStackTrace();
+            if (book.getImage() == null && checkContentType(file)) {
+                try {
+                    Image image = new Image();
+                    String pathURL = imagePath + Instant.now() + "___" + file.getOriginalFilename();
+                    UUID id = UUID.randomUUID();
+                    image.setId(id.toString());
+                    image.setUrl(pathURL);
+                    File directory = new File(pathURL);
+                    file.transferTo(directory);
+                    updateBookByAddingGivenImage(image, book);
+                    return new ResponseEntity<>(image, HttpStatus.OK);
+                } catch (IOException e) {
+                    responseMessage.setMessage("Error in path not found" + e);
+                    e.printStackTrace();
+                    return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                responseMessage.setMessage("Coverpage already added for book or Image format not supported");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
             }
         }
@@ -100,16 +105,21 @@ public class ImageService {
         if (currentBook != null) {
             if (currentImage.isPresent()) {
                 if (currentBook.getImage().getId().equals(imageId)) {
-                    try {
-                        String pathURL = imagePath + Instant.now() + "___" + file.getOriginalFilename();
-                        File directory = new File(pathURL);
-                        currentBook.getImage().setUrl(pathURL);
-                        imageRepository.save(currentBook.getImage());
-                        file.transferTo(directory);
-                        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                    } catch (IOException e) {
-                        responseMessage.setMessage("Error in path not found" + e);
-                        e.printStackTrace();
+                    if (checkContentType(file)) {
+                        try {
+                            String pathURL = imagePath + Instant.now() + "___" + file.getOriginalFilename();
+                            File directory = new File(pathURL);
+                            currentBook.getImage().setUrl(pathURL);
+                            imageRepository.save(currentBook.getImage());
+                            file.transferTo(directory);
+                            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                        } catch (IOException e) {
+                            responseMessage.setMessage("Error in path not found" + e);
+                            e.printStackTrace();
+                            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+                        }
+                    } else {
+                        responseMessage.setMessage("Only .jpg,.png,.jpeg formats are supported");
                         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
                     }
                 } else {
@@ -131,4 +141,8 @@ public class ImageService {
         book.setImage(image);
         bookService.save(book);
 	}
+
+    private Boolean checkContentType(MultipartFile file) {
+        return file.getContentType().equals("image/jpeg") || file.getContentType().equals("image/png");
+    }
 }
