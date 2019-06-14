@@ -23,9 +23,7 @@ public class ImageController {
 	public ResponseEntity<?> addImageToBook(@PathVariable String idBook, @RequestParam("file") MultipartFile file,
 			HttpServletRequest request){
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
-		if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-            return imageService.createCoverPage(idBook, file);
-		}
+        if (responseEntity.getStatusCode().equals(HttpStatus.OK)) return imageService.createCoverPage(idBook, file);
 		return responseEntity;
 	}
 	
@@ -42,18 +40,15 @@ public class ImageController {
     public ResponseEntity<?> modifyBookImageDetails(@PathVariable String idBook, @PathVariable String idImage
             , @RequestParam("file") MultipartFile file, HttpServletRequest request) {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
-        if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
+        if (responseEntity.getStatusCode().equals(HttpStatus.OK))
             return imageService.updateCoverPage(idBook, idImage, file);
-        }
 		return responseEntity;
 	}
 
     @DeleteMapping(value = "/book/{idBook}/image/{idImage}")
 	public ResponseEntity<?> removeBookImageDetails(@PathVariable String idBook, @PathVariable String idImage, HttpServletRequest request) {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
-        if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-        	return imageService.deleteCoverPage(idBook, idImage);
-        }
+        if (responseEntity.getStatusCode().equals(HttpStatus.OK)) return imageService.deleteCoverPage(idBook, idImage);
         return responseEntity;
 	}
 }

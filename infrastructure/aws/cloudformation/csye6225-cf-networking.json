@@ -148,28 +148,36 @@
       "Description" : "The ID of vpc",
       "Value" : {"Ref" : "VPC"},
       "Export" : {
-        "Name" : "csye6225-vpc"
+        "Name" :{
+          "Fn::Join" : [ ":", [ { "Ref" : "AWS::StackName" }, "VPC" ] ]
+        }
       }
     },
     "publicSubnet1Id" : {
       "Description" : "The ID of public subnet 1",
       "Value" : {"Ref" : "Subnet1"},
       "Export" : {
-        "Name" : "csye6225-subnet1"
+        "Name" :{
+          "Fn::Join" : [ ":", [ { "Ref" : "AWS::StackName" }, "Subnet1" ] ]
+        }
       }
     },
     "publicSubnet2Id" : {
       "Description" : "The ID of public subnet 2",
       "Value" : {"Ref" : "Subnet2"},
       "Export" : {
-        "Name" : "csye6225-subnet2"
+        "Name" :{
+          "Fn::Join" : [ ":", [ { "Ref" : "AWS::StackName" }, "Suubnet2" ] ]
+        }
       }
     },
     "publicSubnet3Id" : {
       "Description" : "The ID of public subnet 3",
       "Value" : {"Ref" : "Subnet3"},
       "Export" : {
-        "Name" : "csye6225-subnet3"
+        "Name" :{
+          "Fn::Join" : [ ":", [ { "Ref" : "AWS::StackName" }, "Suubnet3" ] ]
+        }
       }
     }
   }
