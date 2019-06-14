@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 display_usage()
 {
 echo "Usage:$0 [StackName]"
@@ -13,13 +14,17 @@ echo "Deleting Stack $1 ......."
 aws cloudformation delete-stack --stack-name $1
 
 #Checking the status of the
-status=$(aws cloudformation describe-stacks --stack-name $1 | grep StackStatus)
+status=$(aws cloudformation describe-stacks --stack-name $1 --output text)
+if [[ -z "status" ]]; then
+		echo "VPC does not exist"
+	else
+		terminateOutput=$(aws cloudformation delete-stack --stack-name $1)
+		if [[ $? -eq 0 ]]; then
+			echo "Deletion in Progress"
+	    aws cloudformation wait stack-delete-complete --stack-name $1
+	    echo "Deletion of stack successful"
+	  else
+	  echo "Deletion failed"
+	  fi
+fi
 
-while [[ -n "$status" ]]
-do
-	echo "$status"
-	sleep 3
-	status=$(aws cloudformation describe-stacks --stack-name $1 2>&1 | grep StackStatus)
-done
-
-echo "Stack $1 deleted successfully!!"
