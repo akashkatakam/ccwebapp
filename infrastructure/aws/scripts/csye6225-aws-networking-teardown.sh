@@ -59,39 +59,6 @@ echo "Fetched Route Table with ID: "$RouteTableId
 echo "Deleting public gateway route from route table"
 aws ec2 delete-route --route-table-id $RouteTableId --destination-cidr-block 0.0.0.0/0
 
-echo "Association......"
-asscId1=$(aws ec2 describe-route-tables --filter "Name=route.gateway-id,Values=$InternetGatewayId" --query 'RouteTables[0].Associations[0]'|grep RouteTableAssociationId|cut -d'"' -f4)
-if [ -z "$asscId1" ];then
-    echo "Failed to fetch Association of Subnet 1 with Route Table."
-    exit 1
-fi
-echo "Association ID of Subnet 1 with Route Table: "$asscId1
-
-asscId2=$(aws ec2 describe-route-tables --filter "Name=route.gateway-id,Values=$InternetGatewayId" --query 'RouteTables[0].Associations[1]'|grep RouteTableAssociationId|cut -d'"' -f4)
-if [ -z "$asscId2" ];then
-    echo "Failed to fetch Association of Subnet 2 with Route Table."
-    exit 1
-fi
-echo "Association ID of Subnet 2 with Route Table: "$asscId2
-
-asscId3=$(aws ec2 describe-route-tables --filter "Name=route.gateway-id,Values=$InternetGatewayId" --query 'RouteTables[0].Associations[2]'|grep RouteTableAssociationId|cut -d'"' -f4)
-if [ -z "$asscId3" ];then
-    echo "Failed to fetch Association of Subnet 3 with Route Table."
-    exit 1
-fi
-echo "Association ID of Subnet 3 with Route Table: "$asscId3
-
-
-echo "Removing the association between subnets and the route table......"
-aws ec2 disassociate-route-table --association-id=$asscId1
-aws ec2 disassociate-route-table --association-id=$asscId2
-aws ec2 disassociate-route-table --association-id=$asscId3
-
-
-echo "Deleting Route Table......."
-aws ec2 delete-route-table --route-table-id $RouteTableId
-
-
 echo "Detaching Internet Gateway from VPC......"
 aws ec2 detach-internet-gateway --internet-gateway-id $InternetGatewayId --vpc-id $VpcId
 
@@ -105,6 +72,8 @@ aws ec2 delete-subnet --subnet-id $subnet_1
 aws ec2 delete-subnet --subnet-id $subnet_2
 aws ec2 delete-subnet --subnet-id $subnet_3
 
+echo "Deleting Route Table......."
+aws ec2 delete-route-table --route-table-id $RouteTableId
 
 echo "Deleting VPC......"
 aws ec2 delete-vpc --vpc-id $VpcId
