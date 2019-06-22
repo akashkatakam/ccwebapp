@@ -2,16 +2,16 @@
    "AWSTemplateFormatVersion":"2010-09-09",
    "Parameters":{
       "keyPairName":{
-         "Type":"AWS::EC2::KeyPair::KeyName"
+         "Type":"String"
       },
 	"vpcId":{
-         "Type":"AWS::EC2::VPC::Id"
+         "Type":"String"
       },
       "appStackName":{
          "Type":"String"
       },
       "amiId":{
-         "Type":"AWS::EC2::Image::Id"
+         "Type":"String"
       },
       "s3Bucket":{
          "Type":"String"
@@ -29,5 +29,108 @@
          "Description":"Database Password",
          "Type":"String"
       }
-   }
-}
+   },
+  "Resources": {
+    "webServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable HTTP access via port 80, SSH access via port 22",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "443",
+            "ToPort": "443",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8080",
+            "ToPort": "8080",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "csye6225-cf-vpc"
+        }
+      }
+    },
+    "dbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Security tag for db",
+        "SecurityGroupIngress": [
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "webServerSecurityGroup"
+            },
+            "FromPort": 3306,
+            "IpProtocol": "tcp",
+            "ToPort": 3306
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "csye6225-cf-vpc"
+        }
+      }
+    },
+    "DBSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "DB Subnet Group",
+        "DBSubnetGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "stackName"
+              },
+              "-csye6225-db-subnetgroup"
+            ]
+          ]
+        },
+        "SubnetIds": [
+          {
+            "Fn::ImportValue": "csye6225-cf-dbsubnet1"
+          },
+          {
+            "Fn::ImportValue": "csye6225-cf-dbsubnet2"
+          }
+        ]
+      }
+    },
+    "EC2Instance" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "ImageId" : {"Ref": "webServerSecurityGroup"},
+        "KeyName" : "testkey",
+        "BlockDeviceMappings" : [
+          {
+            "DeviceName" : "/dev/sdm",
+            "Ebs" : {
+              "VolumeType" : "io1",
+              "Iops" : "200",
+              "DeleteOnTermination" : "false",
+              "VolumeSize" : "20"
+            }
+          },
+          {
+            "DeviceName" : "/dev/sdk",
+            "NoDevice" : {}
+          }
+        ]
+      }
+    }
+  }
+  }
