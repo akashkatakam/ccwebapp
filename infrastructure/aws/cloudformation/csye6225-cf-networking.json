@@ -33,7 +33,9 @@
           "Ref": "VPC"
         },
         "CidrBlock": "10.0.8.0/24",
-        "AvailabilityZone": {"Ref": "Zone1"}
+        "AvailabilityZone": {
+          "Ref": "Zone1"
+        }
       }
     },
     "Subnet2": {
@@ -43,7 +45,9 @@
           "Ref": "VPC"
         },
         "CidrBlock": "10.0.4.0/24",
-        "AvailabilityZone": {"Ref": "Zone2"}
+        "AvailabilityZone": {
+          "Ref": "Zone2"
+        }
       }
     },
     "Subnet3": {
@@ -53,7 +57,9 @@
           "Ref": "VPC"
         },
         "CidrBlock": "10.0.6.0/24",
-        "AvailabilityZone": {"Ref": "Zone3"}
+        "AvailabilityZone": {
+          "Ref": "Zone3"
+        }
       }
     },
     "InternetGateway": {
@@ -143,41 +149,41 @@
       }
     }
   },
-  "Outputs" : {
-    "awsvpcID" : {
-      "Description" : "The ID of vpc",
-      "Value" : {"Ref" : "VPC"},
-      "Export" : {
-        "Name" :{
-          "Fn::Join" : [ ":", [ { "Ref" : "AWS::StackName" }, "VPC" ] ]
-        }
+  "Outputs": {
+    "awsvpcID": {
+      "Description": "The ID of vpc",
+      "Value": {
+        "Ref": "VPC"
+      },
+      "Export": {
+        "Name": "vpcID"
       }
     },
-    "publicSubnet1Id" : {
-      "Description" : "The ID of public subnet 1",
-      "Value" : {"Ref" : "Subnet1"},
-      "Export" : {
-        "Name" :{
-          "Fn::Join" : [ ":", [ { "Ref" : "AWS::StackName" }, "Subnet1" ] ]
-        }
+    "publicSubnet1Id": {
+      "Description": "The ID of public subnet 1",
+      "Value": {
+        "Ref": "Subnet1"
+      },
+      "Export": {
+        "Name": "webSubnet"
       }
     },
-    "publicSubnet2Id" : {
-      "Description" : "The ID of public subnet 2",
-      "Value" : {"Ref" : "Subnet2"},
-      "Export" : {
-        "Name" :{
-          "Fn::Join" : [ ":", [ { "Ref" : "AWS::StackName" }, "Suubnet2" ] ]
-        }
+    "publicSubnet2Id": {
+      "Description": "The ID of public subnet 2",
+      "Value": {
+        "Ref": "Subnet2"
+      },
+      "Export": {
+        "Name": "dbSubnet1"
       }
     },
-    "publicSubnet3Id" : {
-      "Description" : "The ID of public subnet 3",
-      "Value" : {"Ref" : "Subnet3"},
-      "Export" : {
-        "Name" :{
-          "Fn::Join" : [ ":", [ { "Ref" : "AWS::StackName" }, "Suubnet3" ] ]
-        }
+    "publicSubnet3Id": {
+      "Description": "The ID of public subnet 3",
+      "Value": {
+        "Ref": "Subnet3"
+      },
+      "Export": {
+        "Name": "dbSubnet2"
       }
     }
   }

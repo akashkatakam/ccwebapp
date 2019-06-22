@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #Script to create the application stack
 
 ./csye6225-aws-cf-create-stack.sh sample

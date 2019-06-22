@@ -2,18 +2,12 @@
    "AWSTemplateFormatVersion":"2010-09-09",
    "Parameters":{
       "KeyPair":{
-         "Type":"AWS::EC2::KeyPair::KeyName"
-      },
-	"VPC":{
-         "Type":"AWS::EC2::VPC::Id"
-      },
-      "appStackName":{
          "Type":"String"
       },
-      "AMI":{
-         "Type":"AWS::EC2::Image::Id"
+	 "VPC":{
+         "Type":"String"
       },
-      "S3Bucket":{
+      "ImageID":{
          "Type":"String"
       },
       "Domain":{
@@ -62,7 +56,7 @@
           }
         ],
         "VpcId": {
-          "Fn::ImportValue": "csye6225-cf-vpc"
+          "Fn::ImportValue": ""
         }
       }
     },
@@ -113,24 +107,42 @@
     "EC2Instance" : {
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
-        "ImageId" : {"Ref": "webServerSecurityGroup"},
-        "KeyName" : "testkey",
+        "ImageId" : {"Ref": "ImageID"},
+        "KeyName" : {"Ref":"KeyPair"},
+        "InstanceType" : "t2.micro",
         "BlockDeviceMappings" : [
           {
-            "DeviceName" : "/dev/sdm",
+            "DeviceName" : "/dev/sda1",
             "Ebs" : {
-              "VolumeType" : "io1",
+              "VolumeType" : "GP2",
               "Iops" : "200",
-              "DeleteOnTermination" : "false",
+              "DeleteOnTermination" : "true",
               "VolumeSize" : "20"
             }
-          },
-          {
-            "DeviceName" : "/dev/sdk",
-            "NoDevice" : {}
           }
         ]
       }
+    },
+    "DynamoDBTable" : {
+      "Type" : "AWS::DynamoDB::Table",
+      "Properties" : {
+        "AttributeDefinitions" : [
+          {
+            "AttributeName" : "id",
+            "AttributeType" : "S"
+          }
+        ],
+        "ProvisionedThroughput" : {
+          "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "5"
+        },
+        "TableName" : "csye6225",
+        "KeySchema" : {
+          "AttributeName" : "id",
+          "KeyType" : "HASH"
+        }
+      }
     }
+  }
   }
   }
