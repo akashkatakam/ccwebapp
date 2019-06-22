@@ -1,22 +1,22 @@
 {
    "AWSTemplateFormatVersion":"2010-09-09",
    "Parameters":{
-      "keyPairName":{
-         "Type":"String"
+      "KeyPair":{
+         "Type":"AWS::EC2::KeyPair::KeyName"
       },
-	"vpcId":{
-         "Type":"String"
+	"VPC":{
+         "Type":"AWS::EC2::VPC::Id"
       },
       "appStackName":{
          "Type":"String"
       },
-      "amiId":{
+      "AMI":{
+         "Type":"AWS::EC2::Image::Id"
+      },
+      "S3Bucket":{
          "Type":"String"
       },
-      "s3Bucket":{
-         "Type":"String"
-      },
-      "domainName":{
+      "Domain":{
          "Type":"String"
       },
       "DBUsername":{
