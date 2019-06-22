@@ -1,1 +1,33 @@
-
+{
+   "AWSTemplateFormatVersion":"2010-09-09",
+   "Parameters":{
+      "keyPairName":{
+         "Type":"AWS::EC2::KeyPair::KeyName"
+      },
+	"vpcId":{
+         "Type":"AWS::EC2::VPC::Id"
+      },
+      "appStackName":{
+         "Type":"String"
+      },
+      "amiId":{
+         "Type":"AWS::EC2::Image::Id"
+      },
+      "s3Bucket":{
+         "Type":"String"
+      },
+      "domainName":{
+         "Type":"String"
+      },
+      "DBUsername":{
+         "Default":"csye6225master",
+         "Description":"Database Username",
+         "Type":"String"
+      },
+      "DBPassword":{
+         "Default":"csye6225password",
+         "Description":"Database Password",
+         "Type":"String"
+      }
+   }
+}
