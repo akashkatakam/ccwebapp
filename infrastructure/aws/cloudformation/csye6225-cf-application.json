@@ -75,7 +75,7 @@
           }
         ],
         "VpcId": {
-          "Fn::ImportValue": ""
+          "Fn::ImportValue": "vpcID"
         }
       }
     },
@@ -96,10 +96,10 @@
         },
         "SubnetIds": [
           {
-            "Fn::ImportValue": "csye6225-cf-dbsubnet1"
+            "Fn::ImportValue": "dbsubnet1"
           },
           {
-            "Fn::ImportValue": "csye6225-cf-dbsubnet2"
+            "Fn::ImportValue": "dbsubnet2"
           }
         ]
       }
