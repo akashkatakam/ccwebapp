@@ -157,9 +157,11 @@
 	    "DBSubnetGroupName":{
                "Ref":"DBSubnetGroup"
             },
-	    "PubliclyAccessible":"true"
+	    "PubliclyAccessible":"true",
+	    "databaseSecurityGroup":{
+		"Ref" : "dbSecurityGroup"
         }
     }
   }
-  }
-
+}
+ }
