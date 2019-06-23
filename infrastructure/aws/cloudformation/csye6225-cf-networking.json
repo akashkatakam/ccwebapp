@@ -16,6 +16,8 @@
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport" : "true",
+        "EnableDnsHostnames" : "true",
         "Tags": [
           {
             "Key": "Name",
@@ -32,6 +34,7 @@
         "VpcId": {
           "Ref": "VPC"
         },
+        "MapPublicIpOnLaunch" : "true",
         "CidrBlock": "10.0.8.0/24",
         "AvailabilityZone": {
           "Ref": "Zone1"

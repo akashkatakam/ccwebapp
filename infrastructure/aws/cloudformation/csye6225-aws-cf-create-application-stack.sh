@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 #Script to create the application stack
 
-./csye6225-aws-cf-create-stack.sh sample
+display_usage()
+{
+echo "Usage:$0 [StackName]"
+}
+if [[ $# -lt 1 ]];then
+	display_usage
+	exit 1
+fi
 
-echo "Enter the application stack name:"
-read stack_name
-
-appStackName=$stack_name-app-$RANDOM
+appStackName=$1-app-$RANDOM
 echo "App stack name:"$appStackName
 
 echo "Printing existing KeyPairs..."
@@ -24,7 +28,26 @@ amiId=$AmiId
 echo "Selected AMI Id-> "$amiId
 
 
-aws cloudformation create-stack --stack-name $appStackName --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=$keyPairName ParameterKey=ImageID,ParameterValue=$amiId
+stackId=$(aws cloudformation create-stack --stack-name $appStackName --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=$keyPairName ParameterKey=ImageID,ParameterValue=$amiId |grep StackId)
+if [[ -z "$stackID" ]];then
+	echo "Falied to create stack $1"
+	exit 1
+fi
 
-echo "status:"$stackStatus
+status=$(aws cloudformation describe-stacks --stack-name  $1| grep StackStatus| cut -d'"' -f4)
+
+while [[ "$status" != "CREATE_COMPLETE" ]]
+do
+       echo "$status"
+       if [[ "$status" == "ROLLBACK_COMPLETE" ]];then
+	       echo "$1 Stack_Create_Uncomplete !!"
+	       exit 1
+       fi
+       sleep 4
+       status=$(aws cloudformation describe-stacks --stack-name  $1 2>&1 | grep StackStatus| cut -d'"' -f4)
+done
+
+echo "Stack with name $1 creation completed successfully!!"
+
+exit 0
 

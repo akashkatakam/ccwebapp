@@ -51,21 +51,7 @@
         ],
         "VpcId": {
           "Fn::ImportValue": "vpcID"
-        },
-        "Tags": [
-          {
-            "Name": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },"WebServerSecurityGroup"
-                ]
-              ]
-            }
-          }
-        ]
+        }
       }
     },
     "DbSecurityGroup": {
@@ -82,23 +68,10 @@
             "ToPort": 3306
           }
         ],
-        "EC2VpcId": {
+        "VpcId": {
           "Fn::ImportValue": "vpcID"
         },
-        "Tags": [
-          {
-            "Name": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },"DbSecurityGroup"
-                ]
-              ]
-            }
-          }
-        ]
+        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["",[{"Ref": "AWS::StackName"},"DbSecurityGroup" ]]}}]
       }
     },
     "DBSubnetGroup": {
@@ -118,24 +91,10 @@
         },
         "SubnetIds": [
           {
-            "Fn::ImportValue": "dbsubnet1"
+            "Fn::ImportValue": "dbSubnet1"
           },
           {
-            "Fn::ImportValue": "dbsubnet2"
-          }
-        ],
-        "Tags": [
-          {
-            "Name": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },"DbSecurityGroup"
-                ]
-              ]
-            }
+            "Fn::ImportValue": "dbSubnet2"
           }
         ]
       }
@@ -143,6 +102,7 @@
     "EC2Instance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
+        "SubnetId" : {"Fn::ImportValue": "webSubnet"},
         "ImageId": {
           "Ref": "ImageID"
         },
@@ -153,10 +113,9 @@
         "BlockDeviceMappings": [
           {
             "DeviceName": "/dev/sda1",
-            "Ebs": {
-              "VolumeType": "GP2",
-              "Iops": "200",
-              "DeleteOnTermination": "true",
+            "Ebs" : {
+              "VolumeType": "gp2",
+              "DeleteOnTermination" : "true",
               "VolumeSize": "20"
             }
           }
@@ -166,20 +125,7 @@
             "Ref": "WebServerSecurityGroup"
           }
         ],
-        "Tags": [
-          {
-            "Name": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },"EC2Instance"
-                ]
-              ]
-            }
-          }
-        ]
+        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["",[{"Ref": "AWS::StackName"},"ec2" ]]}}]
       }
     },
     "DynamoDBTable": {
@@ -191,29 +137,17 @@
             "AttributeType": "S"
           }
         ],
+        "KeySchema" : [
+          {
+            "AttributeName" : "id",
+            "KeyType" : "HASH"
+          }
+        ],
         "ProvisionedThroughput": {
           "ReadCapacityUnits": "5",
           "WriteCapacityUnits": "5"
         },
-        "TableName": "csye6225",
-        "KeySchema": {
-          "AttributeName": "id",
-          "KeyType": "HASH"
-        },
-        "Tags": [
-          {
-            "Name": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },"DynamoDBTable"
-                ]
-              ]
-            }
-          }
-        ]
+        "TableName": "csye6225"
       }
     },
     "RDSDBInstance": {
@@ -222,8 +156,9 @@
         "DBName": "csye6225",
         "DBInstanceClass": "db.m1.small",
         "DBInstanceIdentifier": "csye6225-su19",
+        "AllocatedStorage" : "1",
         "Engine": "MySQL",
-        "EngineVersion": "5.6.13",
+        "EngineVersion": "5.7.25",
         "MasterUsername": {
           "Ref": "DBUsername"
         },
@@ -240,20 +175,7 @@
             "Ref": "DbSecurityGroup"
           }
         ],
-        "Tags": [
-          {
-            "Name": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },"RDS"
-                ]
-              ]
-            }
-          }
-        ]
+        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["",[{"Ref": "AWS::StackName"},"RDS"] ]}}]
       }
     }
   }
