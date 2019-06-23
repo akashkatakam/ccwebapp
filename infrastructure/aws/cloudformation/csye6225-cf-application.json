@@ -4,9 +4,7 @@
       "KeyPair":{
          "Type":"String"
       },
-	 "VPC":{
-         "Type":"String"
-      },
+	 
       "ImageID":{
          "Type":"String"
       },
@@ -88,7 +86,7 @@
             "",
             [
               {
-                "Ref": "stackName"
+                "Ref": "AWS::StackName"
               },
               "-csye6225-db-subnetgroup"
             ]
