@@ -1,29 +1,25 @@
 {
-   "AWSTemplateFormatVersion":"2010-09-09",
-   "Parameters":{
-      "KeyPair":{
-         "Type":"String"
-      },
-	 
-      "ImageID":{
-         "Type":"String"
-      },
-      "Domain":{
-         "Type":"String"
-      },
-      "DBUsername":{
-         "Default":"csye6225master",
-         "Description":"Database Username",
-         "Type":"String"
-      },
-      "DBPassword":{
-         "Default":"csye6225password",
-         "Description":"Database Password",
-         "Type":"String"
-      }
-   },
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "KeyPair": {
+      "Type": "String"
+    },
+    "ImageID": {
+      "Type": "String"
+    },
+    "DBUsername": {
+      "Default": "csye6225master",
+      "Description": "Database Username",
+      "Type": "String"
+    },
+    "DBPassword": {
+      "Default": "csye6225password",
+      "Description": "Database Password",
+      "Type": "String"
+    }
+  },
   "Resources": {
-    "webServerSecurityGroup": {
+    "WebServerSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Enable HTTP access via port 80, SSH access via port 22",
@@ -54,27 +50,55 @@
           }
         ],
         "VpcId": {
-          "Fn::ImportValue": ""
-        }
+          "Fn::ImportValue": "vpcID"
+        },
+        "Tags": [
+          {
+            "Name": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },"WebServerSecurityGroup"
+                ]
+              ]
+            }
+          }
+        ]
       }
     },
-    "dbSecurityGroup": {
+    "DbSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Security tag for db",
         "SecurityGroupIngress": [
           {
             "SourceSecurityGroupId": {
-              "Ref": "webServerSecurityGroup"
+              "Ref": "WebServerSecurityGroup"
             },
             "FromPort": 3306,
             "IpProtocol": "tcp",
             "ToPort": 3306
           }
         ],
-        "VpcId": {
+        "EC2VpcId": {
           "Fn::ImportValue": "vpcID"
-        }
+        },
+        "Tags": [
+          {
+            "Name": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },"DbSecurityGroup"
+                ]
+              ]
+            }
+          }
+        ]
       }
     },
     "DBSubnetGroup": {
@@ -85,10 +109,10 @@
           "Fn::Join": [
             "",
             [
+              "SubnetGroup",
               {
                 "Ref": "AWS::StackName"
-              },
-              "-csye6225-db-subnetgroup"
+              }
             ]
           ]
         },
@@ -99,67 +123,138 @@
           {
             "Fn::ImportValue": "dbsubnet2"
           }
-        ]
-      }
-    },
-    "EC2Instance" : {
-      "Type" : "AWS::EC2::Instance",
-      "Properties" : {
-        "ImageId" : {"Ref": "ImageID"},
-        "KeyName" : {"Ref":"KeyPair"},
-        "InstanceType" : "t2.micro",
-        "BlockDeviceMappings" : [
+        ],
+        "Tags": [
           {
-            "DeviceName" : "/dev/sda1",
-            "Ebs" : {
-              "VolumeType" : "GP2",
-              "Iops" : "200",
-              "DeleteOnTermination" : "true",
-              "VolumeSize" : "20"
+            "Name": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },"DbSecurityGroup"
+                ]
+              ]
             }
           }
         ]
       }
     },
-    "DynamoDBTable" : {
-      "Type" : "AWS::DynamoDB::Table",
-      "Properties" : {
-        "AttributeDefinitions" : [
+    "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Ref": "ImageID"
+        },
+        "KeyName": {
+          "Ref": "KeyPair"
+        },
+        "InstanceType": "t2.micro",
+        "BlockDeviceMappings": [
           {
-            "AttributeName" : "id",
-            "AttributeType" : "S"
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeType": "GP2",
+              "Iops": "200",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
           }
         ],
-        "ProvisionedThroughput" : {
-          "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "5"
-        },
-        "TableName" : "csye6225",
-        "KeySchema" : {
-          "AttributeName" : "id",
-          "KeyType" : "HASH"
-        }
+        "SecurityGroupIds": [
+          {
+            "Ref": "WebServerSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Name": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },"EC2Instance"
+                ]
+              ]
+            }
+          }
+        ]
       }
     },
-   "RDSDBInstance": {
-        "Type": "AWS::RDS::DBInstance",
-        "Properties": {
-            "DBName": "csye6225",
-            "DBInstanceClass": "db.m1.small",
-	    "DBInstanceIdentifier":"csye6225-su19",
-            "Engine": "MySQL",
-            "EngineVersion": "5.6.13",
-            "MasterUsername": "csye6225master",
-            "MasterUserPassword": "csye6225password",
-	    "MultiAZ":"false",
-	    "DBSubnetGroupName":{
-               "Ref":"DBSubnetGroup"
-            },
-	    "PubliclyAccessible":"true",
-	    "databaseSecurityGroup":{
-		"Ref" : "dbSecurityGroup"
-        }
+    "DynamoDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": "5",
+          "WriteCapacityUnits": "5"
+        },
+        "TableName": "csye6225",
+        "KeySchema": {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        },
+        "Tags": [
+          {
+            "Name": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },"DynamoDBTable"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "RDSDBInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBName": "csye6225",
+        "DBInstanceClass": "db.m1.small",
+        "DBInstanceIdentifier": "csye6225-su19",
+        "Engine": "MySQL",
+        "EngineVersion": "5.6.13",
+        "MasterUsername": {
+          "Ref": "DBUsername"
+        },
+        "MasterUserPassword": {
+          "Ref": "DBPassword"
+        },
+        "MultiAZ": "false",
+        "DBSubnetGroupName": {
+          "Ref": "DBSubnetGroup"
+        },
+        "PubliclyAccessible": "true",
+        "VPCSecurityGroups": [
+          {
+            "Ref": "DbSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Name": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },"RDS"
+                ]
+              ]
+            }
+          }
+        ]
+      }
     }
   }
 }
- }
