@@ -154,9 +154,9 @@
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
         "DBName": "csye6225",
-        "DBInstanceClass": "db.m1.small",
+        "DBInstanceClass": "db.t2.micro",
         "DBInstanceIdentifier": "csye6225-su19",
-        "AllocatedStorage" : "1",
+        "AllocatedStorage" : "5",
         "Engine": "MySQL",
         "EngineVersion": "5.7.25",
         "MasterUsername": {
@@ -170,6 +170,7 @@
           "Ref": "DBSubnetGroup"
         },
         "PubliclyAccessible": "true",
+        "StorageType" : "gp2",
         "VPCSecurityGroups": [
           {
             "Ref": "DbSecurityGroup"

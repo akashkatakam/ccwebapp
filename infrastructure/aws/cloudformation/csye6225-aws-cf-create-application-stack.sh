@@ -28,13 +28,14 @@ amiId=$AmiId
 echo "Selected AMI Id-> "$amiId
 
 
-stackId=$(aws cloudformation create-stack --stack-name $appStackName --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=$keyPairName ParameterKey=ImageID,ParameterValue=$amiId |grep StackId)
-if [[ -z "$stackID" ]];then
+StackID=$(aws cloudformation create-stack --stack-name $appStackName --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=$keyPairName ParameterKey=ImageID,ParameterValue=$amiId |grep StackId)
+
+if [[ -z "$StackID" ]];then
 	echo "Falied to create stack $1"
 	exit 1
 fi
 
-status=$(aws cloudformation describe-stacks --stack-name  $1| grep StackStatus| cut -d'"' -f4)
+status=$(aws cloudformation describe-stacks --stack-name  $appStackName| grep StackStatus| cut -d'"' -f4)
 
 while [[ "$status" != "CREATE_COMPLETE" ]]
 do
@@ -44,10 +45,10 @@ do
 	       exit 1
        fi
        sleep 4
-       status=$(aws cloudformation describe-stacks --stack-name  $1 2>&1 | grep StackStatus| cut -d'"' -f4)
+       status=$(aws cloudformation describe-stacks --stack-name  $appStackName 2>&1 | grep StackStatus| cut -d'"' -f4)
 done
 
-echo "Stack with name $1 creation completed successfully!!"
+echo "Stack with name $appStackName creation completed successfully!!"
 
 exit 0
 
