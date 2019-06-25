@@ -7,6 +7,9 @@ import com.amazonaws.services.s3.model.Bucket;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class S3Service {
     AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
             .withCredentials(new EnvironmentVariableCredentialsProvider())
