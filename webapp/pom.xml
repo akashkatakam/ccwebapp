@@ -67,18 +67,18 @@
     </dependencies>
     <profiles>
         <profile>
-            <id>dev</id>
+            <id>local</id>
             <properties>
-                <activatedProperties>dev</activatedProperties>
+                <activatedProperties>local</activatedProperties>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
         <profile>
-            <id>prod</id>
+            <id>aws</id>
             <properties>
-                <activatedProperties>prod</activatedProperties>
+                <activatedProperties>aws</activatedProperties>
             </properties>
         </profile>
     </profiles>

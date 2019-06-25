@@ -71,7 +71,7 @@
         "VpcId": {
           "Fn::ImportValue": "vpcID"
         },
-        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["",[{"Ref": "AWS::StackName"},"DbSecurityGroup" ]]}}]
+        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["-",[{"Ref": "AWS::StackName"},"DbSecurityGroup" ]]}}]
       }
     },
     "DBSubnetGroup": {
@@ -125,7 +125,7 @@
             "Ref": "WebServerSecurityGroup"
           }
         ],
-        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["",[{"Ref": "AWS::StackName"},"ec2" ]]}}]
+        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["-",[{"Ref": "AWS::StackName"},"ec2" ]]}}]
       }
     },
     "DynamoDBTable": {
@@ -176,7 +176,7 @@
             "Ref": "DbSecurityGroup"
           }
         ],
-        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["",[{"Ref": "AWS::StackName"},"RDS"] ]}}]
+        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["-",[{"Ref": "AWS::StackName"},"RDS"] ]}}]
       }
     }
   }
