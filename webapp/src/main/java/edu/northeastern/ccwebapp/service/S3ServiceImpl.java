@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +18,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 @Service
 public class S3ServiceImpl {
 
+	@Autowired
 	private AmazonS3 s3client;
 	/*
 	 * @Value("${bucket.name}") private String bucketName;
@@ -26,14 +26,16 @@ public class S3ServiceImpl {
 	static String domainName = "jalkotea";
 	static String bucketName = "csye6225-su19-"+domainName+".me.csye6225.com";
 	
-	
+	public S3ServiceImpl() {
+		this.s3client = S3Config.amazonS3Client();
+	}
 	public void uploadFile(String keyName, MultipartFile uploadFile) throws IllegalStateException, IOException {
 		try {
 			
 			  File convFile = new File(System.getProperty("java.io.tmpdir") +
 			  System.getProperty("file.separator") + uploadFile.getOriginalFilename());
 			  uploadFile.transferTo(convFile);
-			 
+			 /*convFile: path of the file to upload*/
 		    PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, keyName, convFile);
 			AccessControlList acl = new AccessControlList();
 		    acl.grantPermission(GroupGrantee.AllUsers, Permission.Read); //all users or authenticated
