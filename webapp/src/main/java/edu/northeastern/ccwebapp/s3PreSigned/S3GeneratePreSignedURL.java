@@ -13,8 +13,6 @@ public class S3GeneratePreSignedURL {
 
 	public String getPreSignedURL(String objKey, String domainName) throws IOException {
         String clientRegion = "us-east-1";
-        String bucketName = "csye6225-su19-"+domainName+".me.csye6225.com";
-        String objectKey = objKey;
         URL url=null;
 
         try {            
@@ -28,7 +26,7 @@ public class S3GeneratePreSignedURL {
 
             // Generate the presigned URL.
             System.out.println("Generating pre-signed URL.");
-            GeneratePresignedUrlRequest generatePresignedUrlRequest =  new GeneratePresignedUrlRequest(bucketName, objectKey).withMethod(HttpMethod.GET) .withExpiration(expiration);
+            GeneratePresignedUrlRequest generatePresignedUrlRequest =  new GeneratePresignedUrlRequest(domainName, objKey).withMethod(HttpMethod.GET) .withExpiration(expiration);
             url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
             System.out.println("Pre-Signed URL: " + url.toString());
         }

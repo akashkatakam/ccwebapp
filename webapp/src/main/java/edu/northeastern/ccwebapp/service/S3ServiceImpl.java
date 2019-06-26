@@ -23,7 +23,7 @@ public class S3ServiceImpl {
 	/*
 	 * @Value("${bucket.name}") private String bucketName;
 	 */
-	static String domainName = "jalkotea";
+	static String domainName = "kallurit";
 	static String bucketName = "csye6225-su19-"+domainName+".me.csye6225.com";
 	
 	public S3ServiceImpl() {
@@ -36,9 +36,11 @@ public class S3ServiceImpl {
 			uploadFile.transferTo(convFile);
 			/*convFile: path of the file to upload*/
 			PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, keyName, convFile);
-			AccessControlList acl = new AccessControlList();
-			acl.grantPermission(GroupGrantee.AllUsers, Permission.Read); //all users or authenticated
-			putObjectRequest.setAccessControlList(acl);
+			/*
+			 * AccessControlList acl = new AccessControlList();
+			 * acl.grantPermission(GroupGrantee.AllUsers, Permission.Read); //all users or
+			 * authenticated putObjectRequest.setAccessControlList(acl);
+			 */
 			s3client.putObject(putObjectRequest);  
 		} catch (AmazonServiceException ase) {
 			ase.printStackTrace();

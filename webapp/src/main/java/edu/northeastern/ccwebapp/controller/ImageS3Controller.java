@@ -44,10 +44,10 @@ public class ImageS3Controller {
 	
 	  @GetMapping(value="/book/{idBook}/image/{idImage}", produces="application/json") 
 	  public ResponseEntity<?> fetchBookImageDetails(@PathVariable String idBook, @PathVariable String idImage,
-			  HttpServletRequest request) {
+			  HttpServletRequest request) throws Exception {
 		  ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request); 
 		  if (responseEntity.getStatusCode().equals(HttpStatus.OK)) { 
-			  return imageService.getCoverPage(idBook, idImage); 
+			  return imageS3Service.getCoverPage(idBook, idImage); 
 	      } 
 		  return responseEntity; 
 	  }
