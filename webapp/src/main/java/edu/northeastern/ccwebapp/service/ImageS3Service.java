@@ -81,7 +81,9 @@ public class ImageS3Service {
                 if (currentBook.getImage().getId().equals(imageId)) {
                     if (imageService.checkContentType(file)) {
 						String path = currentImage.get().getUrl();
-						s3ServiceImpl.deleteFile(path.split("/")[3]);
+						String[] fileUrlArray = path.split("/");
+						String filename = fileUrlArray[fileUrlArray.length - 1]; 
+						s3ServiceImpl.deleteFile(filename);
 						saveFileInS3Bucket(file, currentBook);
                         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     } else {
@@ -99,5 +101,31 @@ public class ImageS3Service {
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
     }
+
+	public ResponseEntity<?> deleteCoverPage(String bookId, String imageId) {
+		ResponseMessage responseMessage = new ResponseMessage();
+        Book currentBook = bookService.getBookById(bookId);
+        Optional<Image> currentImage = imageRepository.findById(imageId);
+        if (currentBook != null) {
+            if (currentImage.isPresent()) {
+                if (currentBook.getImage().getId().equals(imageId)) {
+					String path = currentImage.get().getUrl();
+					String[] fileUrlArray = path.split("/");
+					String filename = fileUrlArray[fileUrlArray.length - 1]; 
+					s3ServiceImpl.deleteFile(filename);
+					imageService.updateBookByAddingGivenImage(null, currentBook);
+                	imageRepository.deleteById(imageId);
+                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                } else {
+                    responseMessage.setMessage("Image with id " + imageId + " not found in mentioned book.");
+                }
+            } else {
+            	responseMessage.setMessage("Image with id " + imageId + " not found");
+            }
+        } else {
+        	responseMessage.setMessage("Book with id " + bookId + " not found");
+        }
+        return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
+	}
 
 }
