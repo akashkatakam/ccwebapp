@@ -19,10 +19,9 @@ import edu.northeastern.ccwebapp.repository.ImageRepository;
 public class ImageS3Service {
 
 	static String domainName = "jalkotea";
-	static String BucketName = "csye6225-su19-"+domainName+"me.csye6225.com";
-	
-    private static final String imagePath = "https://s3.amazonaws.com/" + BucketName + "/";
+	static String BucketName = "csye6225-su19-"+domainName+".me.csye6225.com";
 
+    private static final String imagePath = "s3://"+BucketName+"/";
 
     private BookService bookService;
     private ImageService imageService;
@@ -47,18 +46,14 @@ public class ImageS3Service {
                     String key = Instant.now().getEpochSecond() + "_" + file.getOriginalFilename();
                     String pathURL = imagePath + URLEncoder.encode(key, "UTF-8");
                     seServiceImpl.uploadFile(key, file);
-                    
                     Image image = new Image();
                     UUID id = UUID.randomUUID();
                     image.setId(id.toString());
                     image.setUrl(pathURL);
-					/*
-					 * File directory = new File(pathURL); file.transferTo(directory);
-					 */
                     imageService.updateBookByAddingGivenImage(image, book);
                     //TO-Do : save into RDS instance
-                    imageRepository.save(image);
-                    return new ResponseEntity<>(image, HttpStatus.OK);
+                    Image uploadedImage = imageRepository.save(image);
+                    return new ResponseEntity<>(uploadedImage, HttpStatus.OK);
                 } catch (IOException e) {
                     responseMessage.setMessage("Error in path not found" + e);
                     e.printStackTrace();
