@@ -3,6 +3,7 @@ package edu.northeastern.ccwebapp.service;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -112,9 +113,11 @@ public class ImageS3Service {
         			S3GeneratePreSignedURL s3Url = new S3GeneratePreSignedURL();
         			Optional<Image> mp=imageRepository.findById(imageId);
         			String image_loc=mp.get().getUrl().substring(mp.get().getUrl().lastIndexOf("/")+1);
-        			String img_url=s3Url.getPreSignedURL(image_loc, BucketName);    
-        		return new ResponseEntity<>(imageRepository.findById(imageId), HttpStatus.OK);
-        			
+        			String img_url=s3Url.getPreSignedURL(image_loc, BucketName);   
+        			Map<String, String> urlMap =  new HashMap<>();
+        			urlMap.put("url", img_url);
+        			urlMap.put("id", mp.get().getId());
+        		return new ResponseEntity<>(urlMap, HttpStatus.OK);	
         					
         		} else {
         			responseMessage.setMessage("Image with mentioned id does not match with book's image id..");
