@@ -30,21 +30,31 @@ public class S3ServiceImpl {
 		this.s3client = S3Config.amazonS3Client();
 	}
 	public void uploadFile(String keyName, MultipartFile uploadFile) throws IllegalStateException, IOException {
-		try {
-			
-			  File convFile = new File(System.getProperty("java.io.tmpdir") +
-			  System.getProperty("file.separator") + uploadFile.getOriginalFilename());
-			  uploadFile.transferTo(convFile);
-			 /*convFile: path of the file to upload*/
-		    PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, keyName, convFile);
+		try {	
+		    File convFile = new File(System.getProperty("java.io.tmpdir") +
+		    System.getProperty("file.separator") + uploadFile.getOriginalFilename());
+			uploadFile.transferTo(convFile);
+			/*convFile: path of the file to upload*/
+			PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, keyName, convFile);
 			AccessControlList acl = new AccessControlList();
-		    acl.grantPermission(GroupGrantee.AllUsers, Permission.Read); //all users or authenticated
-		    putObjectRequest.setAccessControlList(acl);
-		    s3client.putObject(putObjectRequest);
+			acl.grantPermission(GroupGrantee.AllUsers, Permission.Read); //all users or authenticated
+			putObjectRequest.setAccessControlList(acl);
+			s3client.putObject(putObjectRequest);  
 		} catch (AmazonServiceException ase) {
 			ase.printStackTrace();
 		} catch (AmazonClientException ace) {
 			ace.getMessage();
 		}
+	}
+	
+	public void deleteFile(String keyName) {
+		try {
+			s3client.deleteObject(bucketName, keyName);
+		} catch (AmazonServiceException ase) {
+			ase.printStackTrace();
+		} catch (AmazonClientException ace) {
+			ace.getMessage();
+		}
+
 	}
 }
