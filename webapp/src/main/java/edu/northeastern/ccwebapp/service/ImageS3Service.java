@@ -3,6 +3,8 @@ package edu.northeastern.ccwebapp.service;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,11 +17,12 @@ import edu.northeastern.ccwebapp.Util.ResponseMessage;
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.Image;
 import edu.northeastern.ccwebapp.repository.ImageRepository;
+import edu.northeastern.ccwebapp.s3PreSigned.S3GeneratePreSignedURL;
 
 @Service
 public class ImageS3Service {
 
-	static String domainName = "jalkotea";
+	static String domainName = "kallurit";
 	static String BucketName = "csye6225-su19-"+domainName+".me.csye6225.com";
 
     private static final String imagePath = "s3://"+BucketName+"/";
@@ -98,6 +101,34 @@ public class ImageS3Service {
             }
         } else {
         	responseMessage.setMessage("Book with id " + bookId + " not found");
+        }
+        return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
+    }
+	
+	
+	public ResponseEntity<?> getCoverPage(String bookId, String imageId) throws Exception {
+		ResponseMessage responseMessage = new ResponseMessage();
+        Book book = bookService.getBookById(bookId);
+        if(book != null) {
+        	if(book.getImage() != null) {
+        		if(book.getImage().getId().equals(imageId)) {
+        			S3GeneratePreSignedURL s3Url = new S3GeneratePreSignedURL();
+        			Optional<Image> mp=imageRepository.findById(imageId);
+        			String image_loc=mp.get().getUrl().substring(mp.get().getUrl().lastIndexOf("/")+1);
+        			String img_url=s3Url.getPreSignedURL(image_loc, BucketName);   
+        			Map<String, String> urlMap =  new HashMap<>();
+        			urlMap.put("url", img_url);
+        			urlMap.put("id", mp.get().getId());
+        		return new ResponseEntity<>(urlMap, HttpStatus.OK);	
+        					
+        		} else {
+        			responseMessage.setMessage("Image with mentioned id does not match with book's image id..");
+        		}
+        	} else {
+        		responseMessage.setMessage("Image with mentioned id does not exists.");
+        	}
+        } else {
+        	responseMessage.setMessage("Book with mentioned id does not exists.");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
     }
