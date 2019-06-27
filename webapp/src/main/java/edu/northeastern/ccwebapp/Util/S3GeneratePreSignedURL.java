@@ -1,7 +1,5 @@
-package edu.northeastern.ccwebapp.s3PreSigned;
-import java.io.IOException;
-import java.net.URL;
-import com.amazonaws.AmazonServiceException;
+package edu.northeastern.ccwebapp.Util;
+
 import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
@@ -9,9 +7,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 
+import java.net.URL;
+
 public class S3GeneratePreSignedURL {
 
-	public String getPreSignedURL(String objKey, String domainName) throws IOException {
+    public String getPreSignedURL(String objKey, String domainName) {
         String clientRegion = "us-east-1";
         URL url=null;
 
@@ -29,17 +29,14 @@ public class S3GeneratePreSignedURL {
             GeneratePresignedUrlRequest generatePresignedUrlRequest =  new GeneratePresignedUrlRequest(domainName, objKey).withMethod(HttpMethod.GET) .withExpiration(expiration);
             url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
             System.out.println("Pre-Signed URL: " + url.toString());
-        }
-        catch(AmazonServiceException e) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process 
+        } catch (SdkClientException e) {
+            // The call was transmitted successfully, but Amazon S3 couldn't process
             // it, so it returned an error response.
             e.printStackTrace();
-        }
-        catch(SdkClientException e) {
-            // Amazon S3 couldn't be contacted for a response, or the client
-            // couldn't parse the response from Amazon S3.
-            e.printStackTrace();
-        }
+        }// Amazon S3 couldn't be contacted for a response, or the client
+// couldn't parse the response from Amazon S3.
+
+        assert url != null;
         return url.toString();
     }
 }
