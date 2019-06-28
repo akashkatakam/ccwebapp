@@ -4,6 +4,7 @@ import edu.northeastern.ccwebapp.Util.ResponseMessage;
 import edu.northeastern.ccwebapp.Util.S3GeneratePreSignedURL;
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.Image;
+import edu.northeastern.ccwebapp.repository.BookRepository;
 import edu.northeastern.ccwebapp.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ImageS3Service {
@@ -29,20 +27,20 @@ public class ImageS3Service {
 
     private String bucketName;
 
-    private final String imagePath = "s3://" + bucketName + "/";
-
     private BookService bookService;
     private ImageService imageService;
     private S3ServiceImpl s3ServiceImpl;
     private ImageRepository imageRepository;
+    private BookRepository bookRepository;
 
 
     public ImageS3Service(ImageRepository imageRepository, BookService bookService,
-                          ImageService imageService, S3ServiceImpl s3ServiceImpl) {
+                          ImageService imageService, S3ServiceImpl s3ServiceImpl, BookRepository bookRepository) {
         this.imageRepository = imageRepository;
         this.bookService = bookService;
         this.s3ServiceImpl = s3ServiceImpl;
         this.imageService = imageService;
+        this.bookRepository = bookRepository;
     }
 
     public ResponseEntity<?> createCoverPage(String bookId, MultipartFile file) {
@@ -74,6 +72,7 @@ public class ImageS3Service {
     private Image saveFileInS3Bucket(MultipartFile file, Book book) throws IOException {
         String key = Instant.now().getEpochSecond() + "_" + file.getOriginalFilename();
         bucketName = "csye6225-su19-" + domainName + ".me.csye6225.com";
+        String imagePath = "s3://" + bucketName + "/";
         String pathURL = imagePath + URLEncoder.encode(key, "UTF-8");
         if (s3ServiceImpl.uploadFile(key, file, bucketName)) {
             Image image = new Image();
@@ -131,8 +130,10 @@ public class ImageS3Service {
                 if (book.getImage().getId().equals(imageId)) {
                     S3GeneratePreSignedURL s3Url = new S3GeneratePreSignedURL();
                     Optional<Image> mp = imageRepository.findById(imageId);
-                    String image_loc = mp.get().getUrl().substring(mp.get().getUrl().lastIndexOf("/") + 1);
-                    String img_url = s3Url.getPreSignedURL(image_loc, bucketName);
+                    String[] fileUrlArray = mp.get().getUrl().split("/");
+                    String keyName = fileUrlArray[fileUrlArray.length - 1];
+                    String bucketName = fileUrlArray[fileUrlArray.length - 2];
+                    String img_url = s3Url.getPreSignedURL(keyName, bucketName);
                     Map<String, String> urlMap = new HashMap<>();
                     urlMap.put("url", img_url);
                     urlMap.put("id", mp.get().getId());
@@ -175,6 +176,35 @@ public class ImageS3Service {
             responseMessage.setMessage("Book with id " + bookId + " not found");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
+    }
+
+    public ResponseEntity getAllBooks() {
+        S3GeneratePreSignedURL preSignedURL = new S3GeneratePreSignedURL();
+        List<Book> bookDetails = bookRepository.findAll();
+        for (Book b : bookDetails) {
+            generatePresignedUrl(preSignedURL, b);
+        }
+        return new ResponseEntity(bookDetails, HttpStatus.OK);
+    }
+
+    public ResponseEntity getBookById(String bookId) {
+        ResponseMessage responseMessage = new ResponseMessage();
+        S3GeneratePreSignedURL preSignedURL = new S3GeneratePreSignedURL();
+        Book book = bookRepository.findById(bookId);
+        if (book == null) {
+            responseMessage.setMessage("Book with id " + bookId + " not found");
+            return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
+        }
+        generatePresignedUrl(preSignedURL, book);
+        return new ResponseEntity<>(book, HttpStatus.OK);
+    }
+
+    private void generatePresignedUrl(S3GeneratePreSignedURL preSignedURL, Book book) {
+        String url = book.getImage().getUrl();
+        String[] fileUrlArray = url.split("/");
+        String keyName = fileUrlArray[fileUrlArray.length - 1];
+        String bucketName = fileUrlArray[fileUrlArray.length - 2];
+        book.getImage().setUrl(preSignedURL.getPreSignedURL(keyName, bucketName));
     }
 
 }
