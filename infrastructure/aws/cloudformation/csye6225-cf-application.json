@@ -71,7 +71,22 @@
         "VpcId": {
           "Fn::ImportValue": "vpcID"
         },
-        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["-",[{"Ref": "AWS::StackName"},"DbSecurityGroup" ]]}}]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "DbSecurityGroup"
+                ]
+              ]
+            }
+          }
+        ]
       }
     },
     "DBSubnetGroup": {
@@ -102,7 +117,9 @@
     "EC2Instance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "SubnetId" : {"Fn::ImportValue": "webSubnet"},
+        "SubnetId": {
+          "Fn::ImportValue": "webSubnet"
+        },
         "ImageId": {
           "Ref": "ImageID"
         },
@@ -113,9 +130,9 @@
         "BlockDeviceMappings": [
           {
             "DeviceName": "/dev/sda1",
-            "Ebs" : {
+            "Ebs": {
               "VolumeType": "gp2",
-              "DeleteOnTermination" : "true",
+              "DeleteOnTermination": "true",
               "VolumeSize": "20"
             }
           }
@@ -125,7 +142,22 @@
             "Ref": "WebServerSecurityGroup"
           }
         ],
-        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["-",[{"Ref": "AWS::StackName"},"ec2" ]]}}]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "ec2"
+                ]
+              ]
+            }
+          }
+        ]
       }
     },
     "DynamoDBTable": {
@@ -137,10 +169,10 @@
             "AttributeType": "S"
           }
         ],
-        "KeySchema" : [
+        "KeySchema": [
           {
-            "AttributeName" : "id",
-            "KeyType" : "HASH"
+            "AttributeName": "id",
+            "KeyType": "HASH"
           }
         ],
         "ProvisionedThroughput": {
@@ -156,7 +188,7 @@
         "DBName": "csye6225",
         "DBInstanceClass": "db.t2.micro",
         "DBInstanceIdentifier": "csye6225-su19",
-        "AllocatedStorage" : "5",
+        "AllocatedStorage": "5",
         "Engine": "MySQL",
         "EngineVersion": "5.7.25",
         "MasterUsername": {
@@ -170,13 +202,28 @@
           "Ref": "DBSubnetGroup"
         },
         "PubliclyAccessible": "true",
-        "StorageType" : "gp2",
+        "StorageType": "gp2",
         "VPCSecurityGroups": [
           {
             "Ref": "DbSecurityGroup"
           }
         ],
-        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["-",[{"Ref": "AWS::StackName"},"RDS"] ]}}]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "RDS"
+                ]
+              ]
+            }
+          }
+        ]
       }
     }
   }

@@ -20,8 +20,6 @@ import java.util.*;
 @Service
 public class ImageS3Service {
 
-    // static String domainName = "jalkotea";
-    //static String BucketName = "csye6225-su19-" + domainName + ".me.csye6225.com";
     @Value("${cloud.aws.s3.domain}")
     private String domainName;
 
