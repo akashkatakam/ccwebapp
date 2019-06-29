@@ -16,8 +16,8 @@
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": "10.0.0.0/16",
-        "EnableDnsSupport" : "true",
-        "EnableDnsHostnames" : "true",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
         "Tags": [
           {
             "Key": "Name",
@@ -34,7 +34,7 @@
         "VpcId": {
           "Ref": "VPC"
         },
-        "MapPublicIpOnLaunch" : "true",
+        "MapPublicIpOnLaunch": "true",
         "CidrBlock": "10.0.8.0/24",
         "AvailabilityZone": {
           "Ref": "Zone1"
@@ -149,6 +149,142 @@
         "GatewayId": {
           "Ref": "InternetGateway"
         }
+      }
+    },
+    "CodeDeployEC2S3": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "CodeDeployEC2S3",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "s3:Get*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ]
+        },
+        "Users": [
+          "circleci"
+        ]
+      }
+    },
+    "CircleCIUploadToS3": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "CircleCI-Upload-To-S3",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObject"
+              ],
+              "Resource": [
+                "*"
+              ]
+            }
+          ]
+        },
+        "Users": [
+          "circleci"
+        ]
+      }
+    },
+    "CodeDeployEC2S3": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "CodeDeployEC2S3",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "s3:Get*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ]
+        },
+        "Users": [
+          "circleci"
+        ]
+      }
+    },
+    "CirlceCICodeDeploy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "CirlceCI-Code-Deploy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "codedeploy:RegisterApplicationRevision",
+                "codedeploy:GetApplicationRevision"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  ":",
+                  [
+                    "arn:aws:codedeploy",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "csye6225"
+                  ]
+                ]
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "codedeploy:CreateDeployment",
+                "codedeploy:GetDeployment"
+              ],
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "codedeploy:GetDeploymentConfig"
+              ],
+              "Resource": [{
+                "Fn::Join": [
+                  ":",
+                  [
+                    "arn:aws:codedeploy",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "deploymentconfig",
+                    "AllAtOnce"
+                  ]
+                ]
+              }
+              ]
+            }
+          ]
+        },
+        "Users": [
+          "circleci"
+        ]
       }
     }
   },
