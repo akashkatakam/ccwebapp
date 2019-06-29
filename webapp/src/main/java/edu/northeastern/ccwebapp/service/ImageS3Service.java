@@ -182,7 +182,10 @@ public class ImageS3Service {
         S3GeneratePreSignedURL preSignedURL = new S3GeneratePreSignedURL();
         List<Book> bookDetails = bookRepository.findAll();
         for (Book b : bookDetails) {
-            generatePresignedUrl(preSignedURL, b);
+            if (b.getImage() != null) {
+                generatePresignedUrl(preSignedURL, b);
+            }
+            ;
         }
         return new ResponseEntity(bookDetails, HttpStatus.OK);
     }
