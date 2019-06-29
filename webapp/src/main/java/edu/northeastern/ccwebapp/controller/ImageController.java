@@ -2,6 +2,8 @@ package edu.northeastern.ccwebapp.controller;
 
 import edu.northeastern.ccwebapp.service.ImageService;
 import edu.northeastern.ccwebapp.service.UserService;
+
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Profile("local")
 @RestController
 public class ImageController {
 	private UserService userService;

@@ -134,7 +134,7 @@ public class ImageService {
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
     }
 
-    private void updateBookByAddingGivenImage(Image image, Book book) {
+    public void updateBookByAddingGivenImage(Image image, Book book) {
         if(image != null) {
         	imageRepository.save(image);
         }
@@ -142,7 +142,7 @@ public class ImageService {
         bookService.save(book);
 	}
 
-    private Boolean checkContentType(MultipartFile file) {
+    public Boolean checkContentType(MultipartFile file) {
         return file.getContentType().equals("image/jpeg") || file.getContentType().equals("image/png");
     }
 }
