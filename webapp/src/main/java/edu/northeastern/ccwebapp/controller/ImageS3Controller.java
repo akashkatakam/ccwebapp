@@ -102,6 +102,14 @@ public class ImageS3Controller {
 		if (status.equals(HttpStatus.OK)) return bookService.deleteBook(id);
 		else return responseEntity;
 	}
+
+    @PostMapping(value = "/book", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<?> createBook(@RequestBody Book book, HttpServletRequest request) {
+        ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
+        HttpStatus status = responseEntity.getStatusCode();
+        if (status.equals(HttpStatus.OK)) return bookService.addBookDetails(book);
+        else return responseEntity;
+    }
 	 
 	 
 }
