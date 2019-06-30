@@ -221,12 +221,22 @@
 				"DEPLOYMENT_FAILURE"
 			]
 		},
-		"loadBalancerInfo": {
-			"elbInfoList": [
-				{
-					"name": "string"
+		"Ec2TagFilters": [
+			{
+				"Key": "Name",
+				"Type": "KEY_AND_VALUE",
+				"Value": {
+					"Fn::Join": [
+						"-",
+						[
+							{
+								"Ref": "AWS::StackName"
+							},
+							"ec2"
+						]
+					]
 				}
-			]
-		}
+			}
+		]
 	}
 }
