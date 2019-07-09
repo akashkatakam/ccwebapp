@@ -193,20 +193,20 @@
 			]
 		}
 	},
-	"CODEDEPLOYAPPLICATION": {
+	"CodeDeployApplication": {
 		"Type": "AWS::CodeDeploy::Application",
 		"Properties": [
 			{
 				"applicationName": "csye6225-webapp",
-				"computePlatform": "Server"
+				"computePlatform": "ECS"
 			}
 		]
 	},
-	"CODEDEPLOYDEPLOYMENTGROUP": {
+	"CodeDeployDeploymentGroup": {
 		"Type": "AWS::CodeDeploy::DeploymentGroup",
 		"Properties": {
 			"applicationName": {
-				"Ref": "CODEDEPLOYAPPLICATION"
+				"Ref": "CodeDeployApplication"
 			}
 		},
 		"deploymentGroupName": "csye6225-webapp-deployment",
