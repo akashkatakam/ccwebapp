@@ -7,7 +7,10 @@ jobs:
       - checkout
       - run:
           name: Install Packages
-          command: sudo apt-get update && sudo apt-get -y install wget zip unzip python3 python3-pip
+          command: sudo apt-get update && sudo apt-get -y install wget zip unzip python3
+      - run:
+          name: Install pip
+          command: sudo curl -O https://bootstrap.pypa.io/get-pip.py && sudo python3 get-pip.py
       - run:
           name: Install AWS CLI
           command: |
