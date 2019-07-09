@@ -10,7 +10,7 @@ jobs:
           command: |
             pwd
             ls -al
-            cd ccwebapp/webapp/
+            cd webapp/
             mvn -P aws clean package -DskipTests
             cd target/
             ls -al
@@ -19,6 +19,9 @@ jobs:
           name: Zip Artifact
           command: |
             echo "Hello the current build number is ${CIRCLE_BUILD_NUM}"
+            mkdir -p artifact
+
+
       - run:
           name: Upload Artifact to S3
           command: |
