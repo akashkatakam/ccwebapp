@@ -19,7 +19,6 @@ jobs:
             pip3 --version
             sudo pip3 install awscli
             aws --version
-            aws configure --region
       - run:
           name: Build Artifact
           command: |
