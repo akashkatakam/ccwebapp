@@ -19,6 +19,7 @@ jobs:
             pip3 --version
             sudo pip3 install awscli
             aws --version
+            aws configure --region
       - run:
           name: Build Artifact
           command: |
@@ -50,4 +51,6 @@ jobs:
                         --deployment-config-name CodeDeployDefault.AllAtOnce \
                         --deployment-group-name csye6225-deployment \
                         --description "CSYE6255 - CodeDeploy" \
-                        --s3-location bucket=${BUCKET_NAME},key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip,bundleType=zip
+                        --s3-location bucket=${BUCKET_NAME},key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip,bundleType=zip \
+                        --region us-east-1 \
+                        --output json
