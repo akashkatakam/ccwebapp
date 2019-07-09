@@ -6,6 +6,12 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install Packages
+          command: sudo apt-get -y install wget zip unzip python3 python3-pip
+      - run:
+          name: Install AWS CLI
+          command: sudo pip3 install awscli --upgrade --user
+      - run:
           name: Build Artifact
           command: |
             pwd
@@ -20,13 +26,20 @@ jobs:
           command: |
             echo "Hello the current build number is ${CIRCLE_BUILD_NUM}"
             mkdir -p artifact
-
-
+            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/target/ROOT.war infrastructure/aws/codedeploy/*.sh *.yml
+            mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip artifact
+            cd artifact
+            ls -al
       - run:
           name: Upload Artifact to S3
           command: |
-            echo "Hello"
+            aws s3 sync artifact s3://${BUCKET_NAME}
       - run:
           name: Make CodeDeploy API call
           command: |
-            echo "Hello CodeDeploy" 
+            echo "Hello CodeDeploy"
+            aws deploy create-deployment --application-name csye6225 \
+                        --deployment-config-name CodeDeployDefault.AllAtOnce \
+                        --deployment-group-name csye6225-deployment \
+                        --description "CSYE6255 - CodeDeploy" \
+                        --s3-location bucket=${BUCKET_NAME},key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip,bundleType=zip

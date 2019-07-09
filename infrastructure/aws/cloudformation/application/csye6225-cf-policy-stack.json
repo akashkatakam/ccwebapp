@@ -1,10 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Parameters": {
-    "BucketName": {
-      "Type": "String"
-    }
-  },
+
   "Resources": {
     "CodeDeployEC2S3": {
       "Type": "AWS::IAM::Policy",
@@ -23,8 +19,10 @@
             }
           ]
         },
-        "Users": [
-          "circleci"
+        "Roles": [
+          {
+            "Ref":"CodeDeployEC2ServiceRole"
+          }
         ]
       }
     },
@@ -244,7 +242,7 @@
         ]
       },
       "Export": {
-        "Name": "CodeDeployServiceRoleOutput"
+        "Name": "codeDeployServiceRoleArn"
       }
     },
     "CodeDeployEC2ServiceRoleArn": {
