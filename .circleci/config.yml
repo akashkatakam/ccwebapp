@@ -18,7 +18,7 @@ jobs:
           command: |
             pip3 --version
             sudo pip3 install awscli
-            aws help
+            aws --version
       - run:
           name: Build Artifact
           command: |
