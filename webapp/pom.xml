@@ -81,9 +81,9 @@
                 <activatedProperties>aws</activatedProperties>
             </properties>
         </profile>
-    </profiles>
+     </profiles>
     <build>
-        <finalName>csye6225</finalName>
+        <finalName>ROOT</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

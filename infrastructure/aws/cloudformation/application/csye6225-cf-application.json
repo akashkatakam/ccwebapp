@@ -1,0 +1,224 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "KeyPair": {
+      "Type": "String"
+    },
+    "ImageID": {
+      "Type": "String"
+    },
+    "DBUsername": {
+      "Default": "csye6225master",
+      "Description": "Database Username",
+      "Type": "String"
+    },
+    "DBPassword": {
+      "Default": "csye6225password",
+      "Description": "Database Password",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "WebServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable HTTP access via port 80, SSH access via port 22",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "443",
+            "ToPort": "443",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8080",
+            "ToPort": "8080",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "vpcID"
+        }
+      }
+    },
+    "DbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Security tag for db",
+        "SecurityGroupIngress": [
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "WebServerSecurityGroup"
+            },
+            "FromPort": 3306,
+            "IpProtocol": "tcp",
+            "ToPort": 3306
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "vpcID"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "DbSecurityGroup"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "DBSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "DB Subnet Group",
+        "DBSubnetGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "SubnetGroup",
+              {
+                "Ref": "AWS::StackName"
+              }
+            ]
+          ]
+        },
+        "SubnetIds": [
+          {
+            "Fn::ImportValue": "dbSubnet1"
+          },
+          {
+            "Fn::ImportValue": "dbSubnet2"
+          }
+        ]
+      }
+    },
+    "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "SubnetId": {
+          "Fn::ImportValue": "webSubnet"
+        },
+        "ImageId": {
+          "Ref": "ImageID"
+        },
+        "KeyName": {
+          "Ref": "KeyPair"
+        },
+        "InstanceType": "t2.micro",
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeType": "gp2",
+              "DeleteOnTermination": true,
+              "VolumeSize": 20
+            }
+          }
+        ],
+        "SecurityGroupIds": [
+          {
+            "Ref": "WebServerSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "ec2"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "DynamoDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "csye6225"
+      }
+    },
+    "CodeDeployApplication":{
+      "Type":"AWS::CodeDeploy::Application",
+      "Properties":{
+        "ApplicationName":"csye6225",
+        "ComputePlatform":"Server"
+      }
+    },
+    "DeploymentGroup":{
+      "Type":"AWS::CodeDeploy::DeploymentGroup",
+      "DependsOn":"CodeDeployApplication",
+      "Properties":{
+        "ApplicationName":{
+          "Ref":"CodeDeployApplication"
+        },
+        "DeploymentGroupName":"csye6225-deployment",
+        "DeploymentStyle":{
+          "DeploymentOption":"WITHOUT_TRAFFIC_CONTROL",
+          "DeploymentType":"IN_PLACE"
+        },
+        "AutoRollbackConfiguration":{
+          "Enabled":"true",
+          "Events":[
+            "DEPLOYMENT_FAILURE"
+          ]
+        },
+        "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
+        "Ec2TagFilters":[
+          {
+            "Key":"codeDeployKey",
+            "Type":"KEY_AND_VALUE",
+            "Value":"codeDeployValue"
+          }
+        ],
+        "ServiceRoleArn":{
+          "Fn::ImportValue":"codeDeployServiceRoleArn"
+        }
+      }
+    }
+  }
+}

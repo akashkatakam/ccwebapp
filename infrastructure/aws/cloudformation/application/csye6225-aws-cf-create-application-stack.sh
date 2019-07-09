@@ -3,31 +3,23 @@
 
 display_usage()
 {
-echo "Usage:$0 [StackName]"
+echo "Usage:$0 [StackName] [KeyPairName]"
 }
-if [[ $# -lt 1 ]];then
+if [[ $# -lt 2 ]];then
 	display_usage
 	exit 1
 fi
 
-appStackName=$1-app-$RANDOM
+appStackName=$1
 echo "App stack name:"$appStackName
+keyPairName=$2
 
-echo "Printing existing KeyPairs..."
-aws ec2 describe-key-pairs | grep KeyName | cut -d'"' -f4
-echo "Enter the KeyPair Name..."
-read keypairname
-keyPairName=$keypairname
-echo "Selected key pair-> "$keyPairName
-
-echo "Printing existing AMI Ids...."
-aws ec2 describe-images --owners self|grep \"ImageId\"|cut -d'"' -f4
-echo "Enter one AMI ID from above..."
-read AmiId
-amiId=$AmiId
+amiId=$(aws ec2 describe-images --owners self --query 'reverse(sort_by(Images,&CreationDate)[].ImageId)[0]' --output text)
 echo "Selected AMI Id-> "$amiId
-
-
+domain=$(aws route53 list-hosted-zones --query HostedZones[0].Name --output text)
+name=${domain::-1}
+BucketName="${name}.csye6225.com"
+echo $BucketName
 StackID=$(aws cloudformation create-stack --stack-name $appStackName --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=$keyPairName ParameterKey=ImageID,ParameterValue=$amiId |grep StackId)
 
 if [[ -z "$StackID" ]];then
