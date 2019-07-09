@@ -8,6 +8,8 @@ jobs:
       - run:
           name: Build Artifact
           command: |
+            pwd
+            ls -al
             cd ccwebapp/webapp/
             mvn -P aws clean package -DskipTests
             cd target/
