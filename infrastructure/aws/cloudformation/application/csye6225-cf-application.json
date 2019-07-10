@@ -16,6 +16,9 @@
       "Default": "csye6225password",
       "Description": "Database Password",
       "Type": "String"
+    },
+    "S3Bucket":{
+      "Type":"String"
     }
   },
   "Resources": {
@@ -114,6 +117,35 @@
         ]
       }
     },
+    "RDSDBInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBName": "csye6225",
+        "DBInstanceClass": "db.t2.micro",
+        "DBInstanceIdentifier": "csye6225-su19",
+        "AllocatedStorage" : "5",
+        "Engine": "MySQL",
+        "EngineVersion": "5.7.25",
+        "MasterUsername": {
+          "Ref": "DBUsername"
+        },
+        "MasterUserPassword": {
+          "Ref": "DBPassword"
+        },
+        "MultiAZ": "false",
+        "DBSubnetGroupName": {
+          "Ref": "DBSubnetGroup"
+        },
+        "PubliclyAccessible": "true",
+        "StorageType" : "gp2",
+        "VPCSecurityGroups": [
+          {
+            "Ref": "DbSecurityGroup"
+          }
+        ],
+        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["-",[{"Ref": "AWS::StackName"},"RDS"] ]}}]
+      }
+    },
     "EC2Instance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
@@ -127,6 +159,9 @@
           "Ref": "KeyPair"
         },
         "InstanceType": "t2.micro",
+        "IamInstanceProfile" : {
+          "Fn::ImportValue":"CodeDeployEC2InstanceProfile"
+        },
         "BlockDeviceMappings": [
           {
             "DeviceName": "/dev/sda1",
@@ -142,6 +177,80 @@
             "Ref": "WebServerSecurityGroup"
           }
         ],
+        "UserData":{
+          "Fn::Base64":{
+            "Fn::Join":[
+              "\n",
+              [
+                "#!/bin/bash -xe ",
+                "sudo su",
+                "echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh",
+                {
+                  "Fn::Join":[
+                    "",
+                    [
+                      "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=\"jdbc:mysql://",
+                      {
+                        "Fn::GetAtt":[
+                          "RDSDBInstance",
+                          "Endpoint.Address"
+                        ]
+                      },
+                      ":3306/csye6225\"\"'>> /opt/tomcat/bin/setenv.sh \n"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join":[
+                    "",
+                    [
+                      "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"'>> /opt/tomcat/bin/setenv.sh\n"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join":[
+                    "",
+                    [
+                      "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
+                      {
+                        "Ref":"DBUsername"
+                      },
+                      "\"' >> /opt/tomcat/bin/setenv.sh\n"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join":[
+                    "",
+                    [
+                      "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=",
+                      {
+                        "Ref":"DBPassword"
+                      },
+                      "\"' >> /opt/tomcat/bin/setenv.sh\n"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join":[
+                    "",
+                    [
+                      "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dbucket.name=",
+                      {
+                        "Ref":"S3Bucket"
+                      },
+                      "\"' >> /opt/tomcat/bin/setenv.sh\n"
+                    ]
+                  ]
+                },
+                "chmod +x /opt/tomcat/bin/setenv.sh",
+                "systemctl enable tomcat.service",
+                "systemctl start tomcat.service"
+              ]
+            ]
+          }
+        },
         "Tags": [
           {
             "Key": "Name",
@@ -158,7 +267,8 @@
             }
           }
         ]
-      }
+      },
+      "DependsOn":"RDSDBInstance"
     },
     "DynamoDBTable": {
       "Type": "AWS::DynamoDB::Table",

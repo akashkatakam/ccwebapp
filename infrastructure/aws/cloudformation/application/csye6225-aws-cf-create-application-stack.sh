@@ -20,7 +20,7 @@ domain=$(aws route53 list-hosted-zones --query HostedZones[0].Name --output text
 name=${domain::-1}
 BucketName="${name}.csye6225.com"
 echo $BucketName
-StackID=$(aws cloudformation create-stack --stack-name $appStackName --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=$keyPairName ParameterKey=ImageID,ParameterValue=$amiId |grep StackId)
+StackID=$(aws cloudformation create-stack --stack-name $appStackName --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=$keyPairName ParameterKey=ImageID,ParameterValue=$amiId ParameterKey=S3Bucket,ParameterValue=$BucketName |grep StackId)
 
 if [[ -z "$StackID" ]];then
 	echo "Falied to create stack $1"
