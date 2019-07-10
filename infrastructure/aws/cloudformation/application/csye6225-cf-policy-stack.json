@@ -1,6 +1,10 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-
+  "Parameters": {
+    "S3Bucket": {
+      "Type": "String"
+    }
+  },
   "Resources": {
     "CodeDeployEC2S3": {
       "Type": "AWS::IAM::Policy",
@@ -21,7 +25,7 @@
         },
         "Roles": [
           {
-            "Ref":"CodeDeployEC2ServiceRole"
+            "Ref": "CodeDeployEC2ServiceRole"
           }
         ]
       }
@@ -73,7 +77,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":application:csye6225"
+                    "application:csye6225"
                   ]
                 ]
               }
@@ -106,8 +110,7 @@
                         "Ref": "AWS::AccountId"
                       },
                       "deploymentconfig",
-                      "CodeDeployDefault",
-                      "AllAtOnce"
+                      "CodeDeployDefault.AllAtOnce"
                     ]
                   ]
                 }

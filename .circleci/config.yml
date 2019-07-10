@@ -34,7 +34,7 @@ jobs:
           command: |
             echo "Hello the current build number is ${CIRCLE_BUILD_NUM}"
             mkdir -p artifact
-            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/target/ROOT.war infrastructure/aws/codedeploy/*.sh *.yaml
+            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/target/ROOT.war infrastructure/aws/codedeploy/*.sh *.yml
             mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip artifact
             cd artifact
             ls -al

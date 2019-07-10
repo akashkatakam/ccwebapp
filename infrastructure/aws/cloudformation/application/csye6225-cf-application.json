@@ -295,7 +295,7 @@
     "CodeDeployApplication":{
       "Type":"AWS::CodeDeploy::Application",
       "Properties":{
-        "ApplicationName":"csye6225",
+        "ApplicationName":"csye6225-webapp",
         "ComputePlatform":"Server"
       }
     },
@@ -306,7 +306,7 @@
         "ApplicationName":{
           "Ref":"CodeDeployApplication"
         },
-        "DeploymentGroupName":"csye6225-deployment",
+        "DeploymentGroupName":"csye6225-webapp-deployment",
         "DeploymentStyle":{
           "DeploymentOption":"WITHOUT_TRAFFIC_CONTROL",
           "DeploymentType":"IN_PLACE"
