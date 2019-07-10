@@ -17,8 +17,8 @@
       "Description": "Database Password",
       "Type": "String"
     },
-    "S3Bucket":{
-      "Type":"String"
+    "S3Bucket": {
+      "Type": "String"
     }
   },
   "Resources": {
@@ -123,7 +123,7 @@
         "DBName": "csye6225",
         "DBInstanceClass": "db.t2.micro",
         "DBInstanceIdentifier": "csye6225-su19",
-        "AllocatedStorage" : "5",
+        "AllocatedStorage": "5",
         "Engine": "MySQL",
         "EngineVersion": "5.7.25",
         "MasterUsername": {
@@ -137,13 +137,28 @@
           "Ref": "DBSubnetGroup"
         },
         "PubliclyAccessible": "true",
-        "StorageType" : "gp2",
+        "StorageType": "gp2",
         "VPCSecurityGroups": [
           {
             "Ref": "DbSecurityGroup"
           }
         ],
-        "Tags": [ {"Key" : "Name","Value" :{"Fn::Join": ["-",[{"Ref": "AWS::StackName"},"RDS"] ]}}]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "RDS"
+                ]
+              ]
+            }
+          }
+        ]
       }
     },
     "EC2Instance": {
@@ -159,8 +174,8 @@
           "Ref": "KeyPair"
         },
         "InstanceType": "t2.micro",
-        "IamInstanceProfile" : {
-          "Fn::ImportValue":"CodeDeployEC2InstanceProfile"
+        "IamInstanceProfile": {
+          "Fn::ImportValue": "CodeDeployEC2InstanceProfile"
         },
         "BlockDeviceMappings": [
           {
@@ -177,68 +192,68 @@
             "Ref": "WebServerSecurityGroup"
           }
         ],
-        "UserData":{
-          "Fn::Base64":{
-            "Fn::Join":[
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
               "\n",
               [
                 "#!/bin/bash -xe ",
                 "sudo su",
                 "echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh",
                 {
-                  "Fn::Join":[
+                  "Fn::Join": [
                     "",
                     [
-                      "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=\"jdbc:mysql://",
+                      "echo 'JAVA_OPTS=\"$JAVA_OPTS -Ddb.url=",
                       {
-                        "Fn::GetAtt":[
+                        "Fn::GetAtt": [
                           "RDSDBInstance",
                           "Endpoint.Address"
                         ]
                       },
-                      ":3306/csye6225\"\"'>> /opt/tomcat/bin/setenv.sh \n"
+                      "\"'>> /opt/tomcat/bin/setenv.sh \n"
                     ]
                   ]
                 },
                 {
-                  "Fn::Join":[
+                  "Fn::Join": [
                     "",
                     [
-                      "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"'>> /opt/tomcat/bin/setenv.sh\n"
+                      "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=aws\"'>> /opt/tomcat/bin/setenv.sh\n"
                     ]
                   ]
                 },
                 {
-                  "Fn::Join":[
+                  "Fn::Join": [
                     "",
                     [
                       "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
                       {
-                        "Ref":"DBUsername"
+                        "Ref": "DBUsername"
                       },
                       "\"' >> /opt/tomcat/bin/setenv.sh\n"
                     ]
                   ]
                 },
                 {
-                  "Fn::Join":[
+                  "Fn::Join": [
                     "",
                     [
                       "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=",
                       {
-                        "Ref":"DBPassword"
+                        "Ref": "DBPassword"
                       },
                       "\"' >> /opt/tomcat/bin/setenv.sh\n"
                     ]
                   ]
                 },
                 {
-                  "Fn::Join":[
+                  "Fn::Join": [
                     "",
                     [
                       "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dbucket.name=",
                       {
-                        "Ref":"S3Bucket"
+                        "Ref": "S3Bucket"
                       },
                       "\"' >> /opt/tomcat/bin/setenv.sh\n"
                     ]
@@ -268,7 +283,7 @@
           }
         ]
       },
-      "DependsOn":"RDSDBInstance"
+      "DependsOn": "RDSDBInstance"
     },
     "DynamoDBTable": {
       "Type": "AWS::DynamoDB::Table",
@@ -292,41 +307,50 @@
         "TableName": "csye6225"
       }
     },
-    "CodeDeployApplication":{
-      "Type":"AWS::CodeDeploy::Application",
-      "Properties":{
-        "ApplicationName":"csye6225-webapp",
-        "ComputePlatform":"Server"
+    "CodeDeployApplication": {
+      "Type": "AWS::CodeDeploy::Application",
+      "Properties": {
+        "ApplicationName": "csye6225-webapp",
+        "ComputePlatform": "Server"
       }
     },
-    "DeploymentGroup":{
-      "Type":"AWS::CodeDeploy::DeploymentGroup",
-      "DependsOn":"CodeDeployApplication",
-      "Properties":{
-        "ApplicationName":{
-          "Ref":"CodeDeployApplication"
+    "DeploymentGroup": {
+      "Type": "AWS::CodeDeploy::DeploymentGroup",
+      "DependsOn": "CodeDeployApplication",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "CodeDeployApplication"
         },
-        "DeploymentGroupName":"csye6225-webapp-deployment",
-        "DeploymentStyle":{
-          "DeploymentOption":"WITHOUT_TRAFFIC_CONTROL",
-          "DeploymentType":"IN_PLACE"
+        "DeploymentGroupName": "csye6225-webapp-deployment",
+        "DeploymentStyle": {
+          "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL",
+          "DeploymentType": "IN_PLACE"
         },
-        "AutoRollbackConfiguration":{
-          "Enabled":"true",
-          "Events":[
+        "AutoRollbackConfiguration": {
+          "Enabled": "true",
+          "Events": [
             "DEPLOYMENT_FAILURE"
           ]
         },
-        "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
-        "Ec2TagFilters":[
+        "DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
+        "Ec2TagFilters": [
           {
-            "Key":"codeDeployKey",
-            "Type":"KEY_AND_VALUE",
-            "Value":"codeDeployValue"
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "ec2"
+                ]
+              ]
+            }
           }
         ],
-        "ServiceRoleArn":{
-          "Fn::ImportValue":"codeDeployServiceRoleArn"
+        "ServiceRoleArn": {
+          "Fn::ImportValue": "codeDeployServiceRoleArn"
         }
       }
     }
