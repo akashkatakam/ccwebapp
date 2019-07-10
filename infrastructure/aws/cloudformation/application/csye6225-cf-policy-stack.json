@@ -106,6 +106,7 @@
                         "Ref": "AWS::AccountId"
                       },
                       "deploymentconfig",
+                      "CodeDeployDefault",
                       "AllAtOnce"
                     ]
                   ]
