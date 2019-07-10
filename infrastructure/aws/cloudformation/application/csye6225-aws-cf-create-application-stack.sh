@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 #Script to create the application stack
 
+aws ec2 describe-vpcs | grep VpcId| cut -d'"' -f4
+echo "Pick a VpcId:"
+read vpcId
+vpcID=$vpcId
+echo "Subnet IDs:"
+subnets=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpcID" | grep SubnetId| cut -d'"' -f4)
+echo ""$subnets
+counter=1
+#while [counter -le 4]
+#do
+	
+#	counter++
+#done
+
+
 display_usage()
 {
 echo "Usage:$0 [StackName] [KeyPairName]"
@@ -23,7 +38,7 @@ echo $BucketName
 StackID=$(aws cloudformation create-stack --stack-name $appStackName --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=$keyPairName ParameterKey=ImageID,ParameterValue=$amiId |grep StackId)
 
 if [[ -z "$StackID" ]];then
-	echo "Falied to create stack $1"
+	echo "Failed to create stack $1"
 	exit 1
 fi
 

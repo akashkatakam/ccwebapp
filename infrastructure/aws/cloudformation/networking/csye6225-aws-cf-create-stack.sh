@@ -16,7 +16,7 @@ availabilityzone2=$region$3
 availabilityzone3=$region$4
 stackID=$(aws cloudformation create-stack --stack-name $1 --template-body file://csye6225-cf-networking.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=Zone1,ParameterValue=$availabilityzone1 ParameterKey=Zone2,ParameterValue=$availabilityzone2 ParameterKey=Zone3,ParameterValue=$availabilityzone3 | grep StackId)
 if [[ -z "$stackID" ]];then
-	echo "Falied to create stack $1"
+	echo "Failed to create stack $1"
 	exit 1
 fi
 status=$(aws cloudformation describe-stacks --stack-name  $1| grep StackStatus| cut -d'"' -f4)
