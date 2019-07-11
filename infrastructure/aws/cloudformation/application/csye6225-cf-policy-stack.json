@@ -89,7 +89,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    "application:csye6225"
+                    "application:csye6225-webapp"
                   ]
                 ]
               }
