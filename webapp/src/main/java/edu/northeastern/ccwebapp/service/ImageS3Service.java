@@ -20,9 +20,7 @@ import java.util.*;
 @Service
 public class ImageS3Service {
 
-    @Value("${cloud.aws.s3.domain}")
-    private String domainName;
-
+    @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
     private BookService bookService;
@@ -69,7 +67,6 @@ public class ImageS3Service {
 
     private Image saveFileInS3Bucket(MultipartFile file, Book book) throws IOException {
         String key = Instant.now().getEpochSecond() + "_" + file.getOriginalFilename();
-        bucketName = "csye6225-su19-" + domainName + ".me.csye6225.com";
         String imagePath = "s3://" + bucketName + "/";
         String pathURL = imagePath + URLEncoder.encode(key, "UTF-8");
         if (s3ServiceImpl.uploadFile(key, file, bucketName)) {
