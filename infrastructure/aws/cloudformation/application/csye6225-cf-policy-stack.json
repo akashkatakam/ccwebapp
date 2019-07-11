@@ -14,12 +14,24 @@
           "Version": "2012-10-17",
           "Statement": [
             {
+              "Effect": "Allow",
+              "Action": [
+                "s3:GetAccountPublicAccessBlock",
+                "s3:ListAllMyBuckets",
+                "s3:ListJobs"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
               "Action": [
                 "s3:Get*",
                 "s3:List*"
               ],
-              "Effect": "Allow",
-              "Resource": "*"
+              "Resource": [
+                "arn:aws:s3:::code-deploy.csye6225-su19-katakama.me/*",
+                "arn:aws:s3:::code-deploy.csye6225-su19-katakama.me"
+              ]
             }
           ]
         },
@@ -246,16 +258,16 @@
         ]
       },
       "Export": {
-        "Name": "codeDeployServiceRoleArn"
+        "Name": {"Fn::Join" : ["",[{"Ref" : "AWS::StackName"},"-CodeDeployServiceRoleArn"]] }
       }
     },
-    "CodeDeployEC2ServiceRoleArn": {
+    "CodeDeployEC2InstanceProfile": {
       "Description": "Code Deploy EC2 Instance Profile",
       "Value": {
         "Ref": "CodeDeployEC2InstanceProfile"
       },
       "Export": {
-        "Name": "CodeDeployEC2InstanceProfile"
+        "Name": {"Fn::Join" : ["",[{"Ref" : "AWS::StackName"},"-CodeDeployEC2InstanceProfile"]] }
       }
     }
   }
