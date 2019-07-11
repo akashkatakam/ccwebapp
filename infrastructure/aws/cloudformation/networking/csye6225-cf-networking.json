@@ -159,7 +159,7 @@
         "Ref": "VPC"
       },
       "Export": {
-        "Name": "vpcID"
+        "Name": {"Fn::Join" : ["",[{"Ref" : "AWS::StackName"},"-vpcID"]] }
       }
     },
     "publicSubnet1Id": {
@@ -168,7 +168,7 @@
         "Ref": "Subnet1"
       },
       "Export": {
-        "Name": "webSubnet"
+        "Name": {"Fn::Join" : ["",[{"Ref" : "AWS::StackName"},"-webSubnet"]] }
       }
     },
     "publicSubnet2Id": {
@@ -177,7 +177,7 @@
         "Ref": "Subnet2"
       },
       "Export": {
-        "Name": "dbSubnet1"
+        "Name": {"Fn::Join" : ["",[{"Ref" : "AWS::StackName"},"-dbSubnet1"]] }
       }
     },
     "publicSubnet3Id": {
@@ -186,7 +186,7 @@
         "Ref": "Subnet3"
       },
       "Export": {
-        "Name": "dbSubnet2"
+        "Name": {"Fn::Join" : ["",[{"Ref" : "AWS::StackName"},"-dbSubnet2"]] }
       }
     }
   }

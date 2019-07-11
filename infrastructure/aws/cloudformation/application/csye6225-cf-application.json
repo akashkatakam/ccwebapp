@@ -4,6 +4,9 @@
     "KeyPair": {
       "Type": "String"
     },
+    "ntwStack": {
+      "Type": "String"
+    },
     "ImageID": {
       "Type": "String"
     },
@@ -53,7 +56,7 @@
           }
         ],
         "VpcId": {
-          "Fn::ImportValue": "vpcID"
+          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-vpcID"]] }
         }
       }
     },
@@ -72,7 +75,7 @@
           }
         ],
         "VpcId": {
-          "Fn::ImportValue": "vpcID"
+          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-vpcID"]] }
         },
         "Tags": [
           {
@@ -109,10 +112,10 @@
         },
         "SubnetIds": [
           {
-            "Fn::ImportValue": "dbSubnet1"
+            "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-dbSubnet1"]] }
           },
           {
-            "Fn::ImportValue": "dbSubnet2"
+            "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-dbSubnet2"]] }
           }
         ]
       }
@@ -165,7 +168,7 @@
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "SubnetId": {
-          "Fn::ImportValue": "webSubnet"
+          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-webSubnet"]] }
         },
         "ImageId": {
           "Ref": "ImageID"
@@ -336,6 +339,7 @@
         "Ec2TagFilters": [
           {
             "Key": "Name",
+            "Type":"KEY_AND_VALUE",
             "Value": {
               "Fn::Join": [
                 "-",
