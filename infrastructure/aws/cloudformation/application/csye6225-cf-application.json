@@ -4,7 +4,10 @@
     "KeyPair": {
       "Type": "String"
     },
-    "ntwStack": {
+    "NetworkStackName": {
+      "Type": "String"
+    },
+    "PolicyStackName": {
       "Type": "String"
     },
     "ImageID": {
@@ -56,7 +59,7 @@
           }
         ],
         "VpcId": {
-          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-vpcID"]] }
+          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "NetworkStackName"},"-vpcID"]] }
         }
       }
     },
@@ -75,7 +78,7 @@
           }
         ],
         "VpcId": {
-          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-vpcID"]] }
+          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "NetworkStackName"},"-vpcID"]] }
         },
         "Tags": [
           {
@@ -112,10 +115,10 @@
         },
         "SubnetIds": [
           {
-            "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-dbSubnet1"]] }
+            "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "NetworkStackName"},"-dbSubnet1"]] }
           },
           {
-            "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-dbSubnet2"]] }
+            "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "NetworkStackName"},"-dbSubnet2"]] }
           }
         ]
       }
@@ -168,7 +171,7 @@
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "SubnetId": {
-          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "ntwStack"},"-webSubnet"]] }
+          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "NetworkStackName"},"-webSubnet"]] }
         },
         "ImageId": {
           "Ref": "ImageID"
@@ -178,7 +181,7 @@
         },
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
-          "Fn::ImportValue": "CodeDeployEC2InstanceProfile"
+          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "PolicyStackName"},"-CodeDeployEC2InstanceProfile"]] }
         },
         "BlockDeviceMappings": [
           {
@@ -354,7 +357,7 @@
           }
         ],
         "ServiceRoleArn": {
-          "Fn::ImportValue": "codeDeployServiceRoleArn"
+          "Fn::ImportValue": {"Fn::Join" : ["",[{"Ref" : "PolicyStackName"},"-CodeDeployServiceRoleArn"]] }
         }
       }
     }
