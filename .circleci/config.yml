@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:9-jdk
     steps:
       - checkout
       - run:
@@ -25,7 +25,7 @@ jobs:
             pwd
             ls -al
             cd webapp/
-            mvn -P aws clean package -DskipTests
+            mvn -P aws clean package
             cd target/
             ls -al
             cd ../../..

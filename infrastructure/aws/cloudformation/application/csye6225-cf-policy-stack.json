@@ -68,15 +68,8 @@
             {
               "Effect": "Allow",
               "Action": [
-                "s3:ListAllMyBuckets",
-                "s3:ListJobs"
-              ],
-              "Resource": "*"
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "s3:PutObject"
+                "s3:PutObject",
+                "s3:ListBucket"
               ],
               "Resource": [
                 {
@@ -88,6 +81,17 @@
                         "Ref": "S3Bucket"
                       },
                       "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::code-deploy.",
+                      {
+                        "Ref": "S3Bucket"
+                      }
                     ]
                   ]
                 }
