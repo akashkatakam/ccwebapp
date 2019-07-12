@@ -299,13 +299,20 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": "s3:PutAccountPublicAccessBlock",
+              "Action": [
+                "s3:GetAccountPublicAccessBlock",
+                "s3:ListAllMyBuckets",
+                "s3:ListJobs",
+                "s3:PutAccountPublicAccessBlock"
+              ],
               "Resource": "*"
             },
             {
               "Action": [
-                "s3:Put*",
-                "s3:DeleteObject"
+                "s3:Get*",
+                "s3:DeleteObject",
+                "s3:List*",
+                "s3:Put*"
               ],
               "Effect": "Allow",
               "Resource": {
