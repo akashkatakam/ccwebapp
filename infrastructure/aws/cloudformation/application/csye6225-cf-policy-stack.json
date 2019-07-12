@@ -7,9 +7,9 @@
   },
   "Resources": {
     "CodeDeployEC2S3": {
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
-        "PolicyName": "CodeDeployEC2S3",
+        "ManagedPolicyName": "CodeDeploy-EC2-S3",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -29,33 +29,60 @@
                 "s3:List*"
               ],
               "Resource": [
-                "arn:aws:s3:::code-deploy.csye6225-su19-katakama.me/*",
-                "arn:aws:s3:::code-deploy.csye6225-su19-katakama.me"
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::code-deploy",
+                      {
+                        "Ref": "S3Bucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::code-deploy",
+                      {
+                        "Ref": "S3Bucket"
+                      }
+                    ]
+                  ]
+                }
               ]
             }
           ]
-        },
-        "Roles": [
-          {
-            "Ref": "CodeDeployEC2ServiceRole"
-          }
-        ]
+        }
       }
     },
     "CircleCIUploadToS3": {
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
-        "PolicyName": "CircleCI-Upload-To-S3",
+        "ManagedPolicyName": "CircleCI-Upload-To-S3",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",
               "Action": [
-                "s3:*"
+                "s3:PutObject"
               ],
               "Resource": [
-                "*"
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::code-deploy",
+                      {
+                        "Ref": "S3Bucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
               ]
             }
           ]
@@ -66,9 +93,9 @@
       }
     },
     "CirlceCiCodeDeploy": {
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
-        "PolicyName": "CirlceCI-Code-Deploy",
+        "ManagedPolicyName": "CirlceCI-Code-Deploy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -136,9 +163,9 @@
       }
     },
     "CircleCiEc2Ami": {
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
-        "PolicyName": "circleci-ec2-ami",
+        "ManagedPolicyName": "circleci-ec2-ami",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -206,7 +233,14 @@
             }
           ]
         },
-        "Path": "/",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "CodeDeployEC2S3"
+          },
+          {
+            "Ref": "AccessAttachmentToS3Bucket"
+          }
+        ],
         "RoleName": "CodeDeployEC2ServiceRole"
       }
     },
@@ -246,6 +280,38 @@
         "Path": "/",
         "RoleName": "CodeDeployServiceRole"
       }
+    },
+    "AccessAttachmentToS3Bucket": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Policy for uploading attachments into S3",
+        "ManagedPolicyName": "Access-Attachment-To-S3-Bucket",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:DeleteObject",
+                "s3:Get*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3Bucket"
+                    },
+                    ".csye6225.com"
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      }
     }
   },
   "Outputs": {
@@ -258,7 +324,9 @@
         ]
       },
       "Export": {
-        "Name": {"Fn::Join" : ["",[{"Ref" : "AWS::StackName"},"-CodeDeployServiceRoleArn"]] }
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-CodeDeployServiceRoleArn"
+        }
       }
     },
     "CodeDeployEC2InstanceProfile": {
@@ -267,7 +335,9 @@
         "Ref": "CodeDeployEC2InstanceProfile"
       },
       "Export": {
-        "Name": {"Fn::Join" : ["",[{"Ref" : "AWS::StackName"},"-CodeDeployEC2InstanceProfile"]] }
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-CodeDeployEC2InstanceProfile"
+        }
       }
     }
   }

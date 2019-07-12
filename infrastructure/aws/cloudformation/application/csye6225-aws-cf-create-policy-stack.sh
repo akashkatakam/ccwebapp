@@ -13,7 +13,7 @@ policyStackName=$1
 echo "Policy stack name:"$policyStackName
 domain=$(aws route53 list-hosted-zones --query HostedZones[0].Name --output text)
 name=${domain::-1}
-BucketName="${name}.csye6225.com"
+BucketName="${name}"
 echo ${BucketName}
 StackID=$(aws cloudformation create-stack --stack-name $policyStackName --template-body file://csye6225-cf-policy-stack.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=S3Bucket,ParameterValue=${BucketName} |grep StackId)
 if [[ $? -eq 0 ]]; then

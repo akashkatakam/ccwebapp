@@ -193,7 +193,9 @@ public class ImageS3Service {
             responseMessage.setMessage("Book with id " + bookId + " not found");
             return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
         }
-        generatePresignedUrl(preSignedURL, book);
+        if (book.getImage() != null) {
+            generatePresignedUrl(preSignedURL, book);
+        }
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
