@@ -302,24 +302,11 @@
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:GetAccountPublicAccessBlock",
-                "s3:ListAllMyBuckets",
-                "s3:ListJobs",
-                "s3:PutAccountPublicAccessBlock"
-              ],
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "s3:Get*",
-                "s3:DeleteObject",
-                "s3:List*",
-                "s3:Put*"
+                "s3:*"
               ],
               "Effect": "Allow",
-              "Resource": {
+              "Resource": [{
                 "Fn::Join": [
                   "",
                   [
@@ -330,7 +317,20 @@
                     ".csye6225.com"
                   ]
                 ]
+              },{
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3Bucket"
+                    },
+                    ".csye6225.com/*"
+                  ]
+                ]
               }
+              ]
+
             }
           ]
         }
