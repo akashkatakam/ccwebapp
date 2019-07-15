@@ -47,7 +47,7 @@ public class ImageS3Controller {
 		  return responseEntity; 
 	  }
 
-	@GetMapping(value = "/book", produces = "application/json")
+    @GetMapping(value = "/bookakash", produces = "application/json")
 	public ResponseEntity<?> getBooks(HttpServletRequest request) throws Exception {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
 		if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
