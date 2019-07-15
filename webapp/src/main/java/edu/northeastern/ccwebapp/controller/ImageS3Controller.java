@@ -103,7 +103,7 @@ public class ImageS3Controller {
 		else return responseEntity;
 	}
 
-    @PostMapping(value = "/book", produces = "application/json", consumes = "application/json")
+    @PostMapping(value = "/bookTanmayee", produces = "application/json", consumes = "application/json")
     public ResponseEntity<?> createBook(@RequestBody Book book, HttpServletRequest request) {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
