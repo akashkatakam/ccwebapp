@@ -27,7 +27,7 @@ public class ImageS3Controller {
 		this.bookService = bookService;
 	}
 	
-	@PostMapping(value = "/book/{idBook}/image", produces = "application/json")
+	@PostMapping(value = "/bookaditi/{idBook}/image", produces = "application/json")
 	public ResponseEntity<?> addImageToBook(@PathVariable String idBook, @RequestParam("file") MultipartFile file,
 			HttpServletRequest request){
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
@@ -37,7 +37,7 @@ public class ImageS3Controller {
         return responseEntity;
 	}
 	
-	  @GetMapping(value="/book/{idBook}/image/{idImage}", produces="application/json") 
+	  @GetMapping(value="/bookaditi/{idBook}/image/{idImage}", produces="application/json")
 	  public ResponseEntity<?> fetchBookImageDetails(@PathVariable String idBook, @PathVariable String idImage,
 			  HttpServletRequest request) throws Exception {
 		  ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request); 
@@ -47,7 +47,7 @@ public class ImageS3Controller {
 		  return responseEntity; 
 	  }
 
-	@GetMapping(value = "/book", produces = "application/json")
+	@GetMapping(value = "/bookaditi", produces = "application/json")
 	public ResponseEntity<?> getBooks(HttpServletRequest request) throws Exception {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
 		if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
@@ -56,7 +56,7 @@ public class ImageS3Controller {
 		return responseEntity;
 	}
 
-	@GetMapping(value = "/book/{idBook}", produces = "application/json")
+	@GetMapping(value = "/bookaditi/{idBook}", produces = "application/json")
 	public ResponseEntity<?> getBookById(@PathVariable String idBook, HttpServletRequest request) throws Exception {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
 		if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
@@ -66,7 +66,7 @@ public class ImageS3Controller {
 	}
 	 
 
-	  @PutMapping(value = "/book/{idBook}/image/{idImage}", produces = "application/json") 
+	  @PutMapping(value = "/bookaditi/{idBook}/image/{idImage}", produces = "application/json")
 	  public ResponseEntity<?> modifyBookImageDetails(@PathVariable String idBook, @PathVariable String idImage, 
 			  @RequestParam("file") MultipartFile file, HttpServletRequest request) { 
 		  ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request); 
@@ -77,7 +77,7 @@ public class ImageS3Controller {
 	  }
 	  
 	
-	  @DeleteMapping(value = "/book/{idBook}/image/{idImage}") 
+	  @DeleteMapping(value = "/bookaditi/{idBook}/image/{idImage}")
 	  public ResponseEntity<?> removeBookImageDetails(@PathVariable String idBook, @PathVariable String idImage,
 			  HttpServletRequest request) {
 		  ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
@@ -87,7 +87,7 @@ public class ImageS3Controller {
 		  return responseEntity; 
 	  }
 
-	@PutMapping(value = "/book", produces = "application/json", consumes = "application/json")
+	@PutMapping(value = "/bookaditi", produces = "application/json", consumes = "application/json")
 	public ResponseEntity<?> UpdateBook(@RequestBody Book book, HttpServletRequest request) {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
 		HttpStatus status = responseEntity.getStatusCode();
@@ -95,7 +95,7 @@ public class ImageS3Controller {
 		else return responseEntity;
 	}
 
-	@DeleteMapping(value = "/book/{id}")
+	@DeleteMapping(value = "/bookaditi/{id}")
 	public ResponseEntity<?> deleteBookById(@PathVariable("id") String id, HttpServletRequest request) {
 		ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
 		HttpStatus status = responseEntity.getStatusCode();
@@ -103,7 +103,7 @@ public class ImageS3Controller {
 		else return responseEntity;
 	}
 
-    @PostMapping(value = "/book", produces = "application/json", consumes = "application/json")
+    @PostMapping(value = "/bookaditi", produces = "application/json", consumes = "application/json")
     public ResponseEntity<?> createBook(@RequestBody Book book, HttpServletRequest request) {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
