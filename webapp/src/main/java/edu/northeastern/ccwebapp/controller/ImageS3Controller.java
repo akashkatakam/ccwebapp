@@ -23,7 +23,7 @@ public class ImageS3Controller {
     private BookService bookService;
     private StatsDClient statsDClient;
 
-    public ImageS3Controller(UserService userService, ImageS3Service imageS3Service, BookService bookService,StatsDClient statsDClient) {
+    public ImageS3Controller(UserService userService, ImageS3Service imageS3Service, BookService bookService, StatsDClient statsDClient) {
         this.userService = userService;
         this.imageS3Service = imageS3Service;
         this.bookService = bookService;
