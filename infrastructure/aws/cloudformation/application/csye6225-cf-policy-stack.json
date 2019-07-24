@@ -293,6 +293,30 @@
         "RoleName": "CodeDeployServiceRole"
       }
     },
+  "CloudWatchServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                   "ec2.amazonaws.com"
+                ]
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+        ],
+        "Path": "/",
+        "RoleName": "CloudWatchServiceRole"
+      }
+    },
     "AccessAttachmentToS3Bucket": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
