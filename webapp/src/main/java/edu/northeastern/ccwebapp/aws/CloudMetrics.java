@@ -12,12 +12,6 @@ public class CloudMetrics {
     @Value("${publish.metrics}")
     private boolean publishMetrics;
 
-//    @Value("${metrics.server.hostname}")
-//    private String metricsServerHost;
-//
-//    @Value("${metrics.server.port}")
-//    private int metricsServerPort;
-
     @Bean
     public StatsDClient metricsClient() {
 
