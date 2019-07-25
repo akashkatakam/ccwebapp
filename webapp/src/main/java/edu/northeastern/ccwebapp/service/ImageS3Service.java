@@ -6,6 +6,8 @@ import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.Image;
 import edu.northeastern.ccwebapp.repository.BookRepository;
 import edu.northeastern.ccwebapp.repository.ImageRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +31,7 @@ public class ImageS3Service {
     private ImageRepository imageRepository;
     private BookRepository bookRepository;
 
-
+    private final static Logger logger = LogManager.getLogger(ImageS3Service.class);
     public ImageS3Service(ImageRepository imageRepository, BookService bookService,
                           ImageService imageService, S3ServiceImpl s3ServiceImpl, BookRepository bookRepository) {
         this.imageRepository = imageRepository;
@@ -47,16 +49,21 @@ public class ImageS3Service {
                 Image uploadedImage;
                 try {
                     uploadedImage = saveFileInS3Bucket(file, book);
-                    if (uploadedImage != null) return new ResponseEntity<>(uploadedImage, HttpStatus.OK);
+                    if (uploadedImage != null) {
+                        logger.info("Image saved in s3");
+                        return new ResponseEntity<>(uploadedImage, HttpStatus.OK);
+                    }
                     else {
+                        logger.error("Image failed to upload in s3");
                         responseMessage.setMessage("Image failed to upload in S3");
                         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Exception :",e);
                     return new ResponseEntity<>("Image not found", HttpStatus.BAD_REQUEST);
                 }
             } else {
+                logger.error("Cover page already added");
                 responseMessage.setMessage("Coverpage already added for book or Image format not supported");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
             }
@@ -117,7 +124,7 @@ public class ImageS3Service {
     }
 
 
-    public ResponseEntity<?> getCoverPage(String bookId, String imageId) throws Exception {
+    public ResponseEntity<?> getCoverPage(String bookId, String imageId)  {
         ResponseMessage responseMessage = new ResponseMessage();
         Book book = bookService.getBookById(bookId);
         if (book != null) {
