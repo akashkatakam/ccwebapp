@@ -39,6 +39,8 @@ public class UserController {
 
     @PostMapping(value = "/user/register", produces = "application/json", consumes = "application/json")
     public ResponseEntity registerUser(@RequestBody User user) {
+    	 stats.incrementCounter("endpoint.createuser.http.post");
+    	 logger.info("You are in post user controller api");
         return userService.saveUser(user);
     }
 }

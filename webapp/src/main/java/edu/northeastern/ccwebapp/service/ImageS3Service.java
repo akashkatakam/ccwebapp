@@ -2,10 +2,14 @@ package edu.northeastern.ccwebapp.service;
 
 import edu.northeastern.ccwebapp.Util.ResponseMessage;
 import edu.northeastern.ccwebapp.Util.S3GeneratePreSignedURL;
+import edu.northeastern.ccwebapp.controller.UserController;
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.Image;
 import edu.northeastern.ccwebapp.repository.BookRepository;
 import edu.northeastern.ccwebapp.repository.ImageRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +32,7 @@ public class ImageS3Service {
     private S3ServiceImpl s3ServiceImpl;
     private ImageRepository imageRepository;
     private BookRepository bookRepository;
+    private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
 
     public ImageS3Service(ImageRepository imageRepository, BookService bookService,
@@ -50,24 +55,29 @@ public class ImageS3Service {
                     if (uploadedImage != null) return new ResponseEntity<>(uploadedImage, HttpStatus.OK);
                     else {
                         responseMessage.setMessage("Image failed to upload in S3");
+                        logger.warn("Image failed to upload in S3");
                         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    logger.warn("Image not found", HttpStatus.BAD_REQUEST);
                     return new ResponseEntity<>("Image not found", HttpStatus.BAD_REQUEST);
                 }
             } else {
                 responseMessage.setMessage("Coverpage already added for book or Image format not supported");
+                logger.info("Coverpage already added for book or Image format not supported");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
             }
         }
         responseMessage.setMessage("Book with id " + bookId + " not found");
+        logger.info("Book with id " + bookId + " not found");
         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
     }
 
     private Image saveFileInS3Bucket(MultipartFile file, Book book) throws IOException {
         String key = Instant.now().getEpochSecond() + "_" + file.getOriginalFilename();
         String imagePath = "s3://" + bucketName + "/";
+        logger.info("Bucket name="+bucketName);
         String pathURL = imagePath + URLEncoder.encode(key, "UTF-8");
         if (s3ServiceImpl.uploadFile(key, file, bucketName)) {
             Image image = new Image();
@@ -97,20 +107,25 @@ public class ImageS3Service {
                             saveFileInS3Bucket(file, currentBook);
                         } catch (IOException e) {
                             e.printStackTrace();
+                            logger.warn("Image not found", HttpStatus.BAD_REQUEST);
                             return new ResponseEntity<>("Image not found", HttpStatus.BAD_REQUEST);
                         }
                         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     } else {
                         responseMessage.setMessage("Only .jpg,.png,.jpeg formats are supported");
+                        logger.info("Only .jpg,.png,.jpeg formats are supported");
                         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
                     }
                 } else {
+                	logger.info("Image with id " + imageId + " not found in mentioned book.");
                     responseMessage.setMessage("Image with id " + imageId + " not found in mentioned book.");
                 }
             } else {
+            	logger.info("Image with id " + imageId + " not found");
                 responseMessage.setMessage("Image with id " + imageId + " not found");
             }
         } else {
+        	logger.info("Book with id " + bookId + " not found");
             responseMessage.setMessage("Book with id " + bookId + " not found");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
@@ -135,12 +150,15 @@ public class ImageS3Service {
                     return new ResponseEntity<>(urlMap, HttpStatus.OK);
 
                 } else {
+                	logger.info("Image with mentioned id does not match with book's image id..");
                     responseMessage.setMessage("Image with mentioned id does not match with book's image id..");
                 }
             } else {
+            	logger.info("Image with mentioned id does not exists.");
                 responseMessage.setMessage("Image with mentioned id does not exists.");
             }
         } else {
+        	logger.info("Book with mentioned id does not exists.");
             responseMessage.setMessage("Book with mentioned id does not exists.");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
@@ -162,12 +180,15 @@ public class ImageS3Service {
                     imageRepository.deleteById(imageId);
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 } else {
+                	logger.info("Image with id \" + imageId + \" not found in mentioned book.");
                     responseMessage.setMessage("Image with id " + imageId + " not found in mentioned book.");
                 }
             } else {
+            	logger.info("Image with id " + imageId + " not found");
                 responseMessage.setMessage("Image with id " + imageId + " not found");
             }
         } else {
+        	logger.info("Book with id " + bookId + " not found");
             responseMessage.setMessage("Book with id " + bookId + " not found");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
@@ -190,6 +211,7 @@ public class ImageS3Service {
         S3GeneratePreSignedURL preSignedURL = new S3GeneratePreSignedURL();
         Book book = bookRepository.findById(bookId);
         if (book == null) {
+        	logger.info("Book with id " + bookId + " not found");
             responseMessage.setMessage("Book with id " + bookId + " not found");
             return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
         }
