@@ -121,6 +121,4 @@ public class ImageS3Controller {
         if (status.equals(HttpStatus.OK)) return bookService.addBookDetails(book);
         else return responseEntity;
     }
-
-
 }
