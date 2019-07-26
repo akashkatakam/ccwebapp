@@ -1,6 +1,7 @@
 package edu.northeastern.ccwebapp.service;
 
 import edu.northeastern.ccwebapp.Util.ResponseMessage;
+import edu.northeastern.ccwebapp.controller.UserController;
 import edu.northeastern.ccwebapp.pojo.User;
 import edu.northeastern.ccwebapp.repository.UserRepository;
 
@@ -37,8 +38,8 @@ public class UserService {
             User user = findByUserName(userDetails[0]);//find it by username
             if (user != null) {
                 if (new BCryptPasswordEncoder().matches(userDetails[1], user.getPassword())) {//check for password match
-                	logger.info("Current time - " + new Date());
                     responseMessage.setMessage("Current time - " + new Date());
+                    logger.info("Current time - " + new Date());
                     message = new ResponseEntity<>(responseMessage, HttpStatus.OK);
 
                 } else {
@@ -116,6 +117,7 @@ public class UserService {
 
         } else {
             errorMessage.setMessage(responseMessage);
+            logger.error("Could not register, bad request");
             return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
         }
 

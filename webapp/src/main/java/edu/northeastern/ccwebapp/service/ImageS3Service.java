@@ -2,10 +2,12 @@ package edu.northeastern.ccwebapp.service;
 
 import edu.northeastern.ccwebapp.Util.ResponseMessage;
 import edu.northeastern.ccwebapp.Util.S3GeneratePreSignedURL;
+import edu.northeastern.ccwebapp.controller.UserController;
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.Image;
 import edu.northeastern.ccwebapp.repository.BookRepository;
 import edu.northeastern.ccwebapp.repository.ImageRepository;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,25 +58,30 @@ public class ImageS3Service {
                     else {
                         logger.error("Image failed to upload in s3");
                         responseMessage.setMessage("Image failed to upload in S3");
+                        logger.warn("Image failed to upload in S3");
                         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
                     }
                 } catch (IOException e) {
                     logger.error("Exception :",e);
+                    e.printStackTrace();
                     return new ResponseEntity<>("Image not found", HttpStatus.BAD_REQUEST);
                 }
             } else {
                 logger.error("Cover page already added");
                 responseMessage.setMessage("Coverpage already added for book or Image format not supported");
+                logger.info("Coverpage already added for book or Image format not supported");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
             }
         }
         responseMessage.setMessage("Book with id " + bookId + " not found");
+        logger.info("Book with id " + bookId + " not found");
         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
     }
 
     private Image saveFileInS3Bucket(MultipartFile file, Book book) throws IOException {
         String key = Instant.now().getEpochSecond() + "_" + file.getOriginalFilename();
         String imagePath = "s3://" + bucketName + "/";
+        logger.info("Bucket name="+bucketName);
         String pathURL = imagePath + URLEncoder.encode(key, "UTF-8");
         if (s3ServiceImpl.uploadFile(key, file, bucketName)) {
             Image image = new Image();
@@ -104,7 +111,6 @@ public class ImageS3Service {
                             saveFileInS3Bucket(file, currentBook);
                         } catch (IOException e) {
                             e.printStackTrace();
-                            logger.warn("Image not found", HttpStatus.BAD_REQUEST);
                             logger.error("Exception :",e);
                             return new ResponseEntity<>("Image not found", HttpStatus.BAD_REQUEST);
                         }
