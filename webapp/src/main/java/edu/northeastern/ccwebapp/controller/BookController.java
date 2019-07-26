@@ -27,7 +27,7 @@ public class BookController {
         this.userService = userService;
     }
 
-    @PostMapping(value = "/bookaditi", produces = "application/json", consumes = "application/json")
+    @PostMapping(value = "/book", produces = "application/json", consumes = "application/json")
     public ResponseEntity<?> createBook(@RequestBody Book book, HttpServletRequest request) {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         stats.incrementCounter("endpoint.createbook.http.post");
@@ -36,7 +36,7 @@ public class BookController {
         else return responseEntity;
     }
 
-    @GetMapping(value = "/bookaditi", produces = "application/json")
+    @GetMapping(value = "/book", produces = "application/json")
     public ResponseEntity<?> returnBookDetails(HttpServletRequest request) {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         stats.incrementCounter("endpoint.getbooks.http.get");
