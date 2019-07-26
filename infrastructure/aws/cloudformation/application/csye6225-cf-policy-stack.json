@@ -251,7 +251,8 @@
           },
           {
             "Ref": "AccessAttachmentToS3Bucket"
-          }
+          },
+          "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
         ],
         "RoleName": "CodeDeployEC2ServiceRole"
       }
