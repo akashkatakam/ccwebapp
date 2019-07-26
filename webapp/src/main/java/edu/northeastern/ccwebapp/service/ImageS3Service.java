@@ -104,20 +104,26 @@ public class ImageS3Service {
                             saveFileInS3Bucket(file, currentBook);
                         } catch (IOException e) {
                             e.printStackTrace();
+                            logger.warn("Image not found", HttpStatus.BAD_REQUEST);
+                            logger.error("Exception :",e);
                             return new ResponseEntity<>("Image not found", HttpStatus.BAD_REQUEST);
                         }
                         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     } else {
+                    	logger.info("Only .jpg,.png,.jpeg formats are supported");
                         responseMessage.setMessage("Only .jpg,.png,.jpeg formats are supported");
                         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
                     }
                 } else {
+                	logger.warn("Image with id " + imageId + " not found in mentioned book.");
                     responseMessage.setMessage("Image with id " + imageId + " not found in mentioned book.");
                 }
             } else {
+            	logger.warn("Image with id " + imageId + " not found");
                 responseMessage.setMessage("Image with id " + imageId + " not found");
             }
         } else {
+        	logger.warn("Book with id " + bookId + " not found");
             responseMessage.setMessage("Book with id " + bookId + " not found");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
@@ -142,12 +148,15 @@ public class ImageS3Service {
                     return new ResponseEntity<>(urlMap, HttpStatus.OK);
 
                 } else {
+                	logger.info("Image with mentioned id does not match with book's image id..");
                     responseMessage.setMessage("Image with mentioned id does not match with book's image id..");
                 }
             } else {
+            	logger.info("Image with mentioned id does not exists.");
                 responseMessage.setMessage("Image with mentioned id does not exists.");
             }
         } else {
+        	logger.info("Book with mentioned id does not exists.");
             responseMessage.setMessage("Book with mentioned id does not exists.");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
@@ -169,12 +178,15 @@ public class ImageS3Service {
                     imageRepository.deleteById(imageId);
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 } else {
+                	logger.info("Image with id " + imageId + " not found in mentioned book.");
                     responseMessage.setMessage("Image with id " + imageId + " not found in mentioned book.");
                 }
             } else {
+            	logger.info("Image with id " + imageId + " not found");
                 responseMessage.setMessage("Image with id " + imageId + " not found");
             }
         } else {
+        	logger.info("Book with id " + bookId + " not found");
             responseMessage.setMessage("Book with id " + bookId + " not found");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
@@ -197,6 +209,7 @@ public class ImageS3Service {
         S3GeneratePreSignedURL preSignedURL = new S3GeneratePreSignedURL();
         Book book = bookRepository.findById(bookId);
         if (book == null) {
+        	logger.info("Book with id " + bookId + " not found");
             responseMessage.setMessage("Book with id " + bookId + " not found");
             return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
         }

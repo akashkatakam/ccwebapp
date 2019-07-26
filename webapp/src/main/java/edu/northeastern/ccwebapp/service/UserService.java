@@ -3,6 +3,9 @@ package edu.northeastern.ccwebapp.service;
 import edu.northeastern.ccwebapp.Util.ResponseMessage;
 import edu.northeastern.ccwebapp.pojo.User;
 import edu.northeastern.ccwebapp.repository.UserRepository;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -19,6 +22,7 @@ import java.util.regex.Pattern;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final static Logger logger = LogManager.getLogger(UserService.class);
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -33,18 +37,22 @@ public class UserService {
             User user = findByUserName(userDetails[0]);//find it by username
             if (user != null) {
                 if (new BCryptPasswordEncoder().matches(userDetails[1], user.getPassword())) {//check for password match
+                	logger.info("Current time - " + new Date());
                     responseMessage.setMessage("Current time - " + new Date());
                     message = new ResponseEntity<>(responseMessage, HttpStatus.OK);
 
                 } else {
+                	logger.warn("Please enter valid credentials");
                     responseMessage.setMessage("Please enter valid credentials");
                     message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
                 }
             } else {
+            	logger.warn("User does not exist");
                 responseMessage.setMessage("User does not exist");
                 message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
             }
         } else {
+        	logger.warn("User is not logged in");
             responseMessage.setMessage("User is not logged in");
             message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
         }
@@ -54,8 +62,10 @@ public class UserService {
     private String validateUser(User user) {
 
         if (user.getUsername() == null || user.getUsername().isEmpty()) {
+        	logger.warn("username is empty or json format is not correct");
             return "username is empty or json format is not correct";
         } else if (user.getPassword() == null || user.getPassword().isEmpty()) {
+        	logger.warn("password is empty or json format is not correct");
             return "password is empty or json format is not correct";
         }
 
@@ -64,6 +74,7 @@ public class UserService {
         Matcher matcher = pattern.matcher(user.getUsername());
 
         if (!matcher.matches()) {
+        	logger.warn("Please enter a valid email address.");
             return "Please enter a valid email address.";
         }
 
@@ -77,6 +88,7 @@ public class UserService {
         matcher = pattern.matcher(user.getPassword());
 
         if (!matcher.matches()) {
+        	logger.warn("Please enter a valid password of minimum length 8 characters");
             return "Please enter a valid password of minimum length 8 characters";
         }
         return "success";
@@ -93,10 +105,12 @@ public class UserService {
 
             User userByUsername = this.findByUserName(user.getUsername());
             if (userByUsername != null) {
+            	logger.warn("Username already exists!");
                 errorMessage.setMessage("Username already exists!");
                 return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
             }
             userRepository.save(ud);
+            logger.warn("User registered successfully.");
             errorMessage.setMessage("User registered successfully.");
             return new ResponseEntity<>(errorMessage, HttpStatus.OK);
 
