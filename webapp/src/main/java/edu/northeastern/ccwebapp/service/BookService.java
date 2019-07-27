@@ -41,7 +41,7 @@ public class BookService {
             return new ResponseEntity<>(bookDetails, HttpStatus.CREATED);
         } else {
             responseMessage.setMessage("Invalid Title/ Author or Invalid JSON.");
-            logger.warn("Invalid Title/ Author or Invalid JSON.");
+            logger.error("Invalid Title/ Author or Invalid JSON.");
             return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
         }
     }
@@ -69,9 +69,8 @@ public class BookService {
         if (currentBook != null) {
             if (book.getAuthor() == null || book.getTitle() == null ||
             		book.getIsbn() == null || book.getQuantity() <= 0) {
-            	logger.warn("Invalid tittle/Author or an invalid Json format.");
+            	logger.error("Invalid tittle/Author or an invalid Json format.");
                 responseMessage.setMessage("Invalid tittle/Author or an invalid Json format.");
-                logger.info("Invalid Title/ Author or Invalid JSON.");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
             }
             currentBook.setTitle(book.getTitle());
@@ -82,7 +81,7 @@ public class BookService {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             responseMessage.setMessage("Book with id " + book.getId() + " not found");
-            logger.warn("Book with id " + book.getId() + " not found");
+            logger.info("Book with id " + book.getId() + " not found");
             return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
         }
     }
@@ -102,9 +101,8 @@ public class BookService {
             this.deleteBookById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-        	logger.info("Book with id " + id + " not found");
             responseMessage.setMessage("Book with id " + id + " not found");
-            logger.warn("Book with id " + id + " not found");
+            logger.info("Book with id " + id + " not found");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
     }
