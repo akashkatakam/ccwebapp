@@ -5,6 +5,8 @@ import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.service.BookService;
 import edu.northeastern.ccwebapp.service.ImageS3Service;
 import edu.northeastern.ccwebapp.service.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +23,8 @@ public class ImageS3Controller {
     private UserService userService;
     private ImageS3Service imageS3Service;
     private BookService bookService;
-    private StatsDCloggerlient statsDClient;
-
+    private StatsDClient statsDClient;
+    private final static Logger logger = LogManager.getLogger(ImageS3Controller.class);
     public ImageS3Controller(UserService userService, ImageS3Service imageS3Service, BookService bookService, StatsDClient statsDClient) {
         this.userService = userService;
         this.imageS3Service = imageS3Service;
@@ -37,8 +39,11 @@ public class ImageS3Controller {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
             return imageS3Service.createCoverPage(idBook, file);
+        } else {
+            logger.info("User not authenticated");
+            return responseEntity;
         }
-        return responseEntity;
+
     }
 
     @GetMapping(value = "/book/{idBook}/image/{idImage}", produces = "application/json")
@@ -48,8 +53,10 @@ public class ImageS3Controller {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
             return imageS3Service.getCoverPage(idBook, idImage);
+        } else {
+            logger.info("User not authenticated");
+            return responseEntity;
         }
-        return responseEntity;
     }
 
     @GetMapping(value = "/book", produces = "application/json")
@@ -58,8 +65,10 @@ public class ImageS3Controller {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
             return imageS3Service.getAllBooks();
+        } else {
+            logger.info("User not authenticated");
+            return responseEntity;
         }
-        return responseEntity;
     }
 
     @GetMapping(value = "/book/{idBook}", produces = "application/json")
@@ -68,6 +77,8 @@ public class ImageS3Controller {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
             return imageS3Service.getBookById(idBook);
+        } else {
+            logger.info("User not authenticated");
         }
         return responseEntity;
     }
@@ -80,8 +91,10 @@ public class ImageS3Controller {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
             return imageS3Service.updateCoverPage(idBook, idImage, file);
+        } else {
+            logger.info("User not authenticated");
+            return responseEntity;
         }
-        return responseEntity;
     }
 
 
@@ -92,8 +105,10 @@ public class ImageS3Controller {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
             return imageS3Service.deleteCoverPage(idBook, idImage);
+        } else {
+            logger.info("User not authenticated");
+            return responseEntity;
         }
-        return responseEntity;
     }
 
     @PutMapping(value = "/book", produces = "application/json", consumes = "application/json")
@@ -102,7 +117,10 @@ public class ImageS3Controller {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
         if (status.equals(HttpStatus.OK)) return bookService.updateBook(book);
-        else return responseEntity;
+        else {
+            logger.info("User not authenticated");
+            return responseEntity;
+        }
     }
 
     @DeleteMapping(value = "/book/{id}")
@@ -111,14 +129,21 @@ public class ImageS3Controller {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
         HttpStatus status = responseEntity.getStatusCode();
         if (status.equals(HttpStatus.OK)) return bookService.deleteBook(id);
-        else return responseEntity;
+        else {
+            logger.info("User not authenticated");
+            return responseEntity;
+        }
     }
 
     @PostMapping(value = "/book", produces = "application/json", consumes = "application/json")
     public ResponseEntity<?> createBook(@RequestBody Book book, HttpServletRequest request) {
         ResponseEntity<?> responseEntity = userService.resultOfUserStatus(request);
+        statsDClient.incrementCounter("book.delete");
         HttpStatus status = responseEntity.getStatusCode();
         if (status.equals(HttpStatus.OK)) return bookService.addBookDetails(book);
-        else return responseEntity;
+        else {
+            logger.info("User not authenticated");
+            return responseEntity;
+        }
     }
 }
