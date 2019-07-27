@@ -1,10 +1,8 @@
 package edu.northeastern.ccwebapp.service;
 
 import edu.northeastern.ccwebapp.Util.ResponseMessage;
-import edu.northeastern.ccwebapp.controller.UserController;
 import edu.northeastern.ccwebapp.pojo.User;
 import edu.northeastern.ccwebapp.repository.UserRepository;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -48,12 +46,12 @@ public class UserService {
                     message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
                 }
             } else {
-            	logger.warn("User does not exist");
+                logger.info("User does not exist");
                 responseMessage.setMessage("User does not exist");
                 message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
             }
         } else {
-        	logger.warn("User is not logged in");
+            logger.info("User is not logged in");
             responseMessage.setMessage("User is not logged in");
             message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
         }
@@ -63,10 +61,10 @@ public class UserService {
     private String validateUser(User user) {
 
         if (user.getUsername() == null || user.getUsername().isEmpty()) {
-        	logger.warn("username is empty or json format is not correct");
+            logger.error("username is empty or json format is not correct");
             return "username is empty or json format is not correct";
         } else if (user.getPassword() == null || user.getPassword().isEmpty()) {
-        	logger.warn("password is empty or json format is not correct");
+            logger.error("password is empty or json format is not correct");
             return "password is empty or json format is not correct";
         }
 
@@ -75,7 +73,7 @@ public class UserService {
         Matcher matcher = pattern.matcher(user.getUsername());
 
         if (!matcher.matches()) {
-        	logger.warn("Please enter a valid email address.");
+            logger.error("Please enter a valid email address.");
             return "Please enter a valid email address.";
         }
 
@@ -89,7 +87,7 @@ public class UserService {
         matcher = pattern.matcher(user.getPassword());
 
         if (!matcher.matches()) {
-        	logger.warn("Please enter a valid password of minimum length 8 characters");
+            logger.error("Please enter a valid password of minimum length 8 characters");
             return "Please enter a valid password of minimum length 8 characters";
         }
         return "success";
@@ -111,7 +109,7 @@ public class UserService {
                 return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
             }
             userRepository.save(ud);
-            logger.warn("User registered successfully.");
+            logger.info("User registered successfully.");
             errorMessage.setMessage("User registered successfully.");
             return new ResponseEntity<>(errorMessage, HttpStatus.OK);
 
