@@ -2,12 +2,10 @@ package edu.northeastern.ccwebapp.service;
 
 import edu.northeastern.ccwebapp.Util.ResponseMessage;
 import edu.northeastern.ccwebapp.Util.S3GeneratePreSignedURL;
-import edu.northeastern.ccwebapp.controller.UserController;
 import edu.northeastern.ccwebapp.pojo.Book;
 import edu.northeastern.ccwebapp.pojo.Image;
 import edu.northeastern.ccwebapp.repository.BookRepository;
 import edu.northeastern.ccwebapp.repository.ImageRepository;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,9 +54,8 @@ public class ImageS3Service {
                         return new ResponseEntity<>(uploadedImage, HttpStatus.OK);
                     }
                     else {
-                        logger.error("Image failed to upload in s3");
                         responseMessage.setMessage("Image failed to upload in S3");
-                        logger.warn("Image failed to upload in S3");
+                        logger.info("Image failed to upload in S3");
                         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
                     }
                 } catch (IOException e) {
@@ -67,7 +64,6 @@ public class ImageS3Service {
                     return new ResponseEntity<>("Image not found", HttpStatus.BAD_REQUEST);
                 }
             } else {
-                logger.error("Cover page already added");
                 responseMessage.setMessage("Coverpage already added for book or Image format not supported");
                 logger.info("Coverpage already added for book or Image format not supported");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
@@ -121,15 +117,15 @@ public class ImageS3Service {
                         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
                     }
                 } else {
-                	logger.warn("Image with id " + imageId + " not found in mentioned book.");
+                    logger.info("Image with id " + imageId + " not found in mentioned book.");
                     responseMessage.setMessage("Image with id " + imageId + " not found in mentioned book.");
                 }
             } else {
-            	logger.warn("Image with id " + imageId + " not found");
+                logger.info("Image with id " + imageId + " not found");
                 responseMessage.setMessage("Image with id " + imageId + " not found");
             }
         } else {
-        	logger.warn("Book with id " + bookId + " not found");
+            logger.info("Book with id " + bookId + " not found");
             responseMessage.setMessage("Book with id " + bookId + " not found");
         }
         return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
@@ -205,8 +201,8 @@ public class ImageS3Service {
             if (b.getImage() != null) {
                 generatePresignedUrl(preSignedURL, b);
             }
-            ;
         }
+        logger.info("Got all Books - OK");
         return new ResponseEntity(bookDetails, HttpStatus.OK);
     }
 
