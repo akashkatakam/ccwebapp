@@ -43,4 +43,9 @@ public class UserController {
     	 logger.info("You are in post user controller api");
         return userService.saveUser(user);
     }
+    
+    @PostMapping(value="/reset", produces = "application/json", consumes = "application/json")
+    	public ResponseEntity resetPassword(@RequestBody User user) {
+    	return userService.resetPassword(user);
+    }
 }
