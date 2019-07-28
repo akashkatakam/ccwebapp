@@ -141,8 +141,8 @@ public class UserService {
     	ResponseMessage msg= new ResponseMessage();
     	if(findByUserName(user.getUsername()) != null) {
     		AmazonSNS sns = AmazonSNSClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain()).build();
-			sns.publish(new PublishRequest(sns.createTopic("resetPassword").getTopicArn(), "{ \"email\":\""+user.getUsername()+"\"}"));
-			sns.publish(new PublishRequest(sns.createTopic("resetPassword").getTopicArn(), "{ \"email\":\""+user.getUsername()+"\"}"));
+			sns.publish(new PublishRequest(sns.createTopic("reset_password").getTopicArn(), "{ \"email\":\""+user.getUsername()+"\"}"));
+			sns.publish(new PublishRequest(sns.createTopic("reset_password").getTopicArn(), "{ \"email\":\""+user.getUsername()+"\"}"));
 			msg.setMessage("Email was sent successfully");
 			return new ResponseEntity<>(msg, HttpStatus.CREATED);
     	}
