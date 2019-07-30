@@ -1,8 +1,12 @@
 package edu.northeastern.ccwebapp.service;
 
-import edu.northeastern.ccwebapp.Util.ResponseMessage;
-import edu.northeastern.ccwebapp.pojo.User;
-import edu.northeastern.ccwebapp.repository.UserRepository;
+import java.util.Base64;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -11,11 +15,14 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sns.model.PublishRequest;
+
+import edu.northeastern.ccwebapp.Util.ResponseMessage;
+import edu.northeastern.ccwebapp.pojo.User;
+import edu.northeastern.ccwebapp.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -128,5 +135,20 @@ public class UserService {
     public ResponseEntity resultOfUserStatus(HttpServletRequest request) {
         String headerResp = request.getHeader("Authorization");
         return this.checkUserStatus(headerResp);
+    }
+    
+    public ResponseEntity resetPassword(User user) {
+    	ResponseMessage msg= new ResponseMessage();
+    	if(findByUserName(user.getUsername()) != null) {
+    		AmazonSNS sns = AmazonSNSClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain()).build();
+			sns.publish(new PublishRequest(sns.createTopic("reset_password").getTopicArn(), "{ \"email\":\""+user.getUsername()+"\"}"));
+			sns.publish(new PublishRequest(sns.createTopic("reset_password").getTopicArn(), "{ \"email\":\""+user.getUsername()+"\"}"));
+			msg.setMessage("Email was sent successfully");
+			return new ResponseEntity<>(msg, HttpStatus.CREATED);
+    	}
+    	else {
+    		msg.setMessage("Email ID does not exist");
+    		return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+    	}
     }
 }
