@@ -310,6 +310,10 @@
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
+	"TimeToLiveSpecification": {
+          "AttributeName": "ttlInMin",
+          "Enabled": true
+        },
         "TableName": "csye6225"
       }
     },
