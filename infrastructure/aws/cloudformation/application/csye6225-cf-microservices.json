@@ -1,16 +1,16 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-   "Parameters": {
-     "S3Bucket" : {
-       "Type": "String"
-     },
-     "TableName": {
-       "Type": "String"
-     },
-     "DomainName": {
-       "Type": "String"
-     }
-   },
+  "Parameters": {
+    "S3Bucket": {
+      "Type": "String"
+    },
+    "TableName": {
+      "Type": "String"
+    },
+    "DomainName": {
+      "Type": "String"
+    }
+  },
   "Resources": {
     "ResetPasswordLambda": {
       "Type": "AWS::Lambda::Function",
@@ -25,18 +25,18 @@
         },
         "Code": {
           "S3Bucket": {
-            "Ref" : "S3Bucket"
+            "Ref": "S3Bucket"
           },
           "S3Key": "lambda.zip"
         },
-	"Environment" : { 
-           "Variables" : {
-              "DynamoDBEndPoint":"dynamodb.us-east-1.amazonaws.com",
-              "ttlInMin":"20",
-              "domain": {
-                "Ref" : "DomainName"
-              }
-           }
+        "Environment": {
+          "Variables": {
+            "DynamoDBEndPoint": "dynamodb.us-east-1.amazonaws.com",
+            "ttlInMin": "20",
+            "domain": {
+              "Ref": "DomainName"
+            }
+          }
         },
         "Runtime": "java8",
         "ReservedConcurrentExecutions": 5,
@@ -64,53 +64,59 @@
             }
           ]
         },
-	"Policies": [
-          {
-            "PolicyName": "lambda",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Action": [
-                    "dynamodb:PutItem",
-                    "dynamodb:GetItem"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:aws:dynamodb:",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          ":",
-                          {
-                            "Ref": "AWS::AccountId"
-                          },
-                          ":table/",
-                          {
-                            "Ref": "TableName"
-                          }
-                        ]
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Action": "ses:SendEmail",
-                  "Effect": "Allow",
-                  "Resource": "*"
-                }
-              ]
-            }
-          }
-        ],
         "Path": "/",
         "ManagedPolicyArns": [
+          {
+            "Ref": "LambdaDynamoDBSesAccessPolicy"
+          },
           "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
         ]
+      }
+    },
+    "LambdaDynamoDBSesAccessPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "ManagedPolicyName": "lambda-dynamoDB-ses-accessPolicy",
+        "Description": "Policy for lambda to access dynamoDB and ec2",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "dynamodb:Query"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:dynamodb:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Ref": "TableName"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "ses:SendEmail",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ]
+        }
       }
     },
     "PasswordReset": {

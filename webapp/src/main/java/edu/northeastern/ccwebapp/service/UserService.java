@@ -1,12 +1,12 @@
 package edu.northeastern.ccwebapp.service;
 
-import java.util.Base64;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sns.model.PublishRequest;
+import edu.northeastern.ccwebapp.Util.ResponseMessage;
+import edu.northeastern.ccwebapp.pojo.User;
+import edu.northeastern.ccwebapp.repository.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -15,14 +15,11 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.AmazonSNSClientBuilder;
-import com.amazonaws.services.sns.model.PublishRequest;
-
-import edu.northeastern.ccwebapp.Util.ResponseMessage;
-import edu.northeastern.ccwebapp.pojo.User;
-import edu.northeastern.ccwebapp.repository.UserRepository;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Base64;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService {
@@ -48,7 +45,7 @@ public class UserService {
                     message = new ResponseEntity<>(responseMessage, HttpStatus.OK);
 
                 } else {
-                	logger.warn("Please enter valid credentials");
+                    logger.warn("Please enter valid credentials");
                     responseMessage.setMessage("Please enter valid credentials");
                     message = new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
                 }
@@ -111,7 +108,7 @@ public class UserService {
 
             User userByUsername = this.findByUserName(user.getUsername());
             if (userByUsername != null) {
-            	logger.warn("Username already exists!");
+                logger.warn("Username already exists!");
                 errorMessage.setMessage("Username already exists!");
                 return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
             }
@@ -136,19 +133,19 @@ public class UserService {
         String headerResp = request.getHeader("Authorization");
         return this.checkUserStatus(headerResp);
     }
-    
+
     public ResponseEntity resetPassword(User user) {
-    	ResponseMessage msg= new ResponseMessage();
-    	if(findByUserName(user.getUsername()) != null) {
-    		AmazonSNS sns = AmazonSNSClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain()).build();
-			sns.publish(new PublishRequest(sns.createTopic("reset_password").getTopicArn(), "{ \"email\":\""+user.getUsername()+"\"}"));
-			sns.publish(new PublishRequest(sns.createTopic("reset_password").getTopicArn(), "{ \"email\":\""+user.getUsername()+"\"}"));
-			msg.setMessage("Email was sent successfully");
-			return new ResponseEntity<>(msg, HttpStatus.CREATED);
-    	}
-    	else {
-    		msg.setMessage("Email ID does not exist");
-    		return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
-    	}
+        ResponseMessage msg = new ResponseMessage();
+        if (findByUserName(user.getUsername()) != null) {
+            AmazonSNS sns = AmazonSNSClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain()).build();
+            sns.publish(new PublishRequest(sns.createTopic("reset_password").getTopicArn(), "{ \"email\":\"" + user.getUsername() + "\"}"));
+            logger.info("Published message to SNS");
+            msg.setMessage("Email sent successfully");
+            return new ResponseEntity<>(msg, HttpStatus.CREATED);
+        } else {
+            logger.info("User doesn't exist");
+            msg.setMessage("User does not exist");
+            return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+        }
     }
 }
