@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "KeyPair": {
-      "Type": "String"
+      "Type": "AWS::EC2::KeyPair::KeyName"
     },
     "NetworkStackName": {
       "Type": "String"
@@ -11,7 +11,7 @@
       "Type": "String"
     },
     "ImageID": {
-      "Type": "String"
+      "Type": "AWS::EC2::Image::Id"
     },
     "DBUsername": {
       "Default": "csye6225master",
@@ -296,19 +296,23 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "id",
+            "AttributeName": "email",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "id",
+            "AttributeName": "email",
             "KeyType": "HASH"
           }
         ],
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
+        },
+	"TimeToLiveSpecification": {
+          "AttributeName": "ttlInMin",
+          "Enabled": true
         },
         "TableName": "csye6225"
       }
