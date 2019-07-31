@@ -176,6 +176,37 @@
         ]
       }
     },
+     "CircleCIUpdateLambda":{
+         "Type":"AWS::IAM::Policy",
+         "Properties":{
+            "PolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Effect":"Allow",
+                     "Action":[
+                       "lambda:UpdateFunctionCode"
+                     ],
+                     "Resource":[
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "arn:aws:lambda:us-east-1:",
+                                 ":function:PasswordResetLambda"
+                              ]
+                           ]
+                        }
+                     ]
+                  }
+               ]
+            },
+            "PolicyName":"Circle-CI-Update-Lambda-Function",
+            "Users":[
+               "circleci"
+            ]
+         }
+      },
     "PasswordResetLambdaPermission": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
