@@ -32,7 +32,7 @@
         "Environment": {
           "Variables": {
             "DynamoDBEndPoint": "dynamodb.us-east-1.amazonaws.com",
-            "ttlInMin": "20",
+            "ttlInMin": "15",
             "domain": {
               "Ref": "DomainName"
             }
