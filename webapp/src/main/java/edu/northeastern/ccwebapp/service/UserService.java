@@ -135,13 +135,13 @@ public class UserService {
     }
 
     public ResponseEntity resetPassword(User user) {
-        ResponseMessage msg = new ResponseMessage();
+        //ResponseMessage msg = new ResponseMessage();
         if (findByUserName(user.getUsername()) != null) {
             AmazonSNS sns = AmazonSNSClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain()).build();
             sns.publish(new PublishRequest(sns.createTopic("reset_password").getTopicArn(), "{ \"email\":\"" + user.getUsername() + "\"}"));
             logger.info("Published message to SNS");
-            msg.setMessage("Email sent successfully");
-            return new ResponseEntity<>(msg, HttpStatus.CREATED);
+            //msg.setMessage("Email sent successfully");
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             logger.info("User doesn't exist");
             msg.setMessage("User does not exist");
