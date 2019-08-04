@@ -13,6 +13,18 @@
       "ImageID":{  
          "Type":"AWS::EC2::Image::Id"
       },
+      "domainName":{
+         "Type":"String"
+      },
+      "aliasDomainName":{
+         "Type":"String"
+      },
+      "hostedZoneID":{
+         "Type":"String"
+      },
+      "certificateARN": {
+         "Type": "String"
+      },
       "DBUsername":{  
          "Default":"csye6225master",
          "Description":"Database Username",
@@ -219,7 +231,7 @@
             "Type":"application"
          }
       },
-      "autoscalinglaunchconfig":{  
+      "asgLaunchConfig":{
          "Type":"AWS::AutoScaling::LaunchConfiguration",
          "Properties":{  
             "ImageId":{  
@@ -257,7 +269,7 @@
                   "Ref":"WebServerSecurityGroup"
                }
             ],
-            "LaunchConfigurationName":"autoscaling_launch_configuration",
+            "LaunchConfigurationName":"asgLaunchConfig",
             "AssociatePublicIpAddress":true
          }
       },
@@ -364,7 +376,7 @@
             "AutoScalingGroupName":"WebServerGroup",
             "Cooldown":"10",
             "LaunchConfigurationName":{  
-               "Ref":"autoscalinglaunchconfig"
+               "Ref":"asgLaunchConfig"
             },
             "MaxSize":"10",
             "MinSize":"3",
@@ -593,6 +605,114 @@
                   ]
                }
             }
+         }
+      },
+      "DNSRecordSet" : {
+         "Type" : "AWS::Route53::RecordSet",
+         "Properties" : {
+            "Name" : {"Ref": "domainName"},
+            "HostedZoneId" : {"Ref":"hostedZoneID"},
+            "AliasTarget": {
+               "HostedZoneId" : { "Fn::GetAtt" : ["ApplicationLoadBalancer2", "CanonicalHostedZoneID"] },
+               "DNSName" : { "Fn::GetAtt" : ["ApplicationLoadBalancer2","DNSName"] }
+            },
+            "Type" : "A"
+         }
+      },
+      "NoWAFRecordSet": {
+         "Type" : "AWS::Route53::RecordSet",
+         "Properties" : {
+            "Name" : {"Ref": "aliasDomainName"},
+            "HostedZoneId" : {"Ref":"hostedZoneID"},
+            "AliasTarget": {
+               "HostedZoneId" : { "Fn::GetAtt" : ["ApplicationLoadBalancer2", "CanonicalHostedZoneID"] },
+               "DNSName" : { "Fn::GetAtt" : ["ApplicationLoadBalancer2","DNSName"] }
+            },
+            "Type" : "A"
+         }
+      },
+      "HttpsListener": {
+         "Type": "AWS::ElasticLoadBalancingV2::Listener",
+         "Properties": {
+            "Certificates": [
+               {
+                  "CertificateArn": {
+                     "Ref": "certificateARN"
+                  }
+               }
+            ],
+            "DefaultActions": [
+               {
+                  "Type": "forward",
+                  "TargetGroupArn": {
+                     "Ref": "ALBTargetGroup"
+                  }
+               }
+            ],
+            "LoadBalancerArn": {
+               "Ref": "ApplicationLoadBalancer"
+            },
+            "Port": 443,
+            "Protocol": "HTTPS"
+         }
+      },
+      "HttpListener": {
+         "Type": "AWS::ElasticLoadBalancingV2::Listener",
+         "Properties": {
+            "DefaultActions": [
+               {
+                  "Type": "redirect",
+                  "RedirectConfig": {
+                     "Port": 443,
+                     "Protocol": "HTTPS",
+                     "StatusCode": "HTTP_301"
+                  }
+               }
+            ],
+            "LoadBalancerArn": {
+               "Ref": "ApplicationLoadBalancer"
+            },
+            "Port": 8080,
+            "Protocol": "HTTP"
+         }
+      },
+      "NoWAFHttpListener": {
+         "Type" : "AWS::ElasticLoadBalancingV2::Listener",
+         "Properties" : {
+            "DefaultActions" : [{
+               "Type" : "forward",
+               "TargetGroupArn" : { "Ref" : "ALBTargetGroup1" }
+            }
+            ],
+            "LoadBalancerArn" : { "Ref" : "ApplicationLoadBalancer2" },
+            "Port" : 443,
+            "Protocol" : "HTTPS",
+            "Certificates" : [
+               { "CertificateArn" :
+               {
+                  "Ref" : "certificateARN"
+               }
+               }
+            ]
+         }
+      },
+      "NoWAFHttpsListener": {
+         "Type" : "AWS::ElasticLoadBalancingV2::Listener",
+         "Properties" : {
+            "DefaultActions" : [
+               {
+                  "Type" : "redirect",
+                  "RedirectConfig":{
+                     "Port" : 443,
+                     "Protocol" : "HTTPS",
+                     "StatusCode" : "HTTP_301"
+                  }
+               }
+            ],
+            "LoadBalancerArn" : { "Ref" : "ApplicationLoadBalancer2" },
+            "Port" : 8080,
+            "Protocol" : "HTTP"
+
          }
       }
    }
