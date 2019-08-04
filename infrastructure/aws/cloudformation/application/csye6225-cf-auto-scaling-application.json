@@ -13,6 +13,15 @@
       "ImageID":{  
          "Type":"AWS::EC2::Image::Id"
       },
+      "domainName":{
+         "Type":"String"
+      },
+      "aliasDomainName":{
+         "Type":"String"
+      },
+      "hostedZoneID":{
+         "Type":"String"
+      },
       "DBUsername":{  
          "Default":"csye6225master",
          "Description":"Database Username",
@@ -219,7 +228,7 @@
             "Type":"application"
          }
       },
-      "autoscalinglaunchconfig":{  
+      "asg_launch_config":{
          "Type":"AWS::AutoScaling::LaunchConfiguration",
          "Properties":{  
             "ImageId":{  
@@ -257,7 +266,7 @@
                   "Ref":"WebServerSecurityGroup"
                }
             ],
-            "LaunchConfigurationName":"autoscaling_launch_configuration",
+            "LaunchConfigurationName":"asg_launch_config",
             "AssociatePublicIpAddress":true
          }
       },
@@ -364,7 +373,7 @@
             "AutoScalingGroupName":"WebServerGroup",
             "Cooldown":"10",
             "LaunchConfigurationName":{  
-               "Ref":"autoscalinglaunchconfig"
+               "Ref":"asg_launch_config"
             },
             "MaxSize":"10",
             "MinSize":"3",
@@ -593,6 +602,30 @@
                   ]
                }
             }
+         }
+      },
+      "DNSRecordSet" : {
+         "Type" : "AWS::Route53::RecordSet",
+         "Properties" : {
+            "Name" : {"Ref": "domainName"},
+            "HostedZoneId" : {"Ref":"hostedZoneID"},
+            "AliasTarget": {
+               "HostedZoneId" : { "Fn::GetAtt" : ["ApplicationLoadBalancer2", "CanonicalHostedZoneID"] },
+               "DNSName" : { "Fn::GetAtt" : ["ApplicationLoadBalancer2","DNSName"] }
+            },
+            "Type" : "A"
+         }
+      },
+      "NoWAFRecordSet": {
+         "Type" : "AWS::Route53::RecordSet",
+         "Properties" : {
+            "Name" : {"Ref": "aliasDomainName"},
+            "HostedZoneId" : {"Ref":"hostedZoneID"},
+            "AliasTarget": {
+               "HostedZoneId" : { "Fn::GetAtt" : ["ApplicationLoadBalancer2", "CanonicalHostedZoneID"] },
+               "DNSName" : { "Fn::GetAtt" : ["ApplicationLoadBalancer2","DNSName"] }
+            },
+            "Type" : "A"
          }
       }
    }
