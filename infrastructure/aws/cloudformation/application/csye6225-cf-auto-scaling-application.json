@@ -412,7 +412,7 @@
             }
          }
       },
-      "ALBTargetGroup1":{  
+      "NoWAFALBTargetGroup1":{
          "Type":"AWS::ElasticLoadBalancingV2::TargetGroup",
          "Properties":{  
             "HealthCheckIntervalSeconds":30,
@@ -421,7 +421,7 @@
             "HealthCheckProtocol":"HTTP",
             "HealthCheckTimeoutSeconds":7,
             "HealthyThresholdCount":3,
-            "Name":"ALBTargetGroup1",
+            "Name":"NoWAFALBTargetGroup1",
             "Port":8080,
             "Protocol":"HTTP",
             "TargetType":"instance",
@@ -469,7 +469,7 @@
                   "Ref":"ALBTargetGroup"
                },
                {  
-                  "Ref":"ALBTargetGroup1"
+                  "Ref":"NoWAFALBTargetGroup1"
                }
             ],
             "VPCZoneIdentifier":[  
@@ -648,6 +648,22 @@
                   "DEPLOYMENT_FAILURE"
                ]
             },
+            "AutoScalingGroups": [
+               {
+                  "Ref": "WebServerGroup"
+               }
+            ],
+            "LoadBalancerInfo": {
+               "TargetGroupInfoList": [
+                  {
+                     "Name": {
+                        "Fn::GetAtt": [
+                           "ALBTargetGroup"
+                        ]
+                     }
+                  }
+               ]
+            },
             "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
             "Ec2TagFilters":[  
                {  
@@ -750,12 +766,12 @@
             "Protocol": "HTTP"
          }
       },
-      "NoWAFHttpListener": {
+      "NoWAFHttpsListener": {
          "Type" : "AWS::ElasticLoadBalancingV2::Listener",
          "Properties" : {
             "DefaultActions" : [{
                "Type" : "forward",
-               "TargetGroupArn" : { "Ref" : "ALBTargetGroup1" }
+               "TargetGroupArn" : { "Ref" : "NoWAFALBTargetGroup1" }
             }
             ],
             "LoadBalancerArn" : { "Ref" : "ApplicationLoadBalancer2" },
@@ -770,7 +786,7 @@
             ]
          }
       },
-      "NoWAFHttpsListener": {
+      "NoWAFHttpListener": {
          "Type" : "AWS::ElasticLoadBalancingV2::Listener",
          "Properties" : {
             "DefaultActions" : [
