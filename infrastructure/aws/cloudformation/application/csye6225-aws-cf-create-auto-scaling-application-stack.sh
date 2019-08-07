@@ -12,13 +12,13 @@ if [[ $# -lt 4 ]];then
 fi
 
 appStackName=$1
-echo "App stack name:"$appStackName
+echo "App stack name:"${appStackName}
 keyPairName=$2
 networkStackName=$3
 policyStackName=$4
 
 amiId=$(aws ec2 describe-images --owners self --query 'reverse(sort_by(Images,&CreationDate)[].ImageId)[0]' --output text)
-echo "Selected AMI Id-> "$amiId
+echo "Selected AMI Id-> "${amiId}
 domain=$(aws route53 list-hosted-zones --query HostedZones[0].Name --output text)
 certificateArn=$(aws acm list-certificates --query CertificateSummaryList[0].CertificateArn --output text)
 aliasDomainName="nowaf.${domain}"
@@ -27,7 +27,7 @@ hostedZoneID=$(aws route53 list-hosted-zones --query HostedZones[0].Id --output 
 newHostedZoneID=${hostedZoneID:12:${#hostedZoneID}}
 BucketName="${name}.csye6225.com"
 echo ${BucketName}
-StackID=$(aws cloudformation create-stack --stack-name ${appStackName} --template-body file://csye6225-cf-auto-scaling-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=${keyPairName} ParameterKey=ImageID,ParameterValue=${amiId} ParameterKey=S3Bucket,ParameterValue=${BucketName} ParameterKey=certificateARN,ParameterValue=$certificateArn ParameterKey=NetworkStackName,ParameterValue=${networkStackName} ParameterKey=hostedZoneID,ParameterValue=$newHostedZoneID ParameterKey=domainName,ParameterValue=$domain ParameterKey=aliasDomainName,ParameterValue=$aliasDomainName ParameterKey=PolicyStackName,ParameterValue=${policyStackName}|grep StackId)
+StackID=$(aws cloudformation create-stack --stack-name ${appStackName} --template-body file://csye6225-cf-auto-scaling-application.json --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyPair,ParameterValue=${keyPairName} ParameterKey=ImageID,ParameterValue=${amiId} ParameterKey=S3Bucket,ParameterValue=${BucketName} ParameterKey=certificateARN,ParameterValue=${certificateArn} ParameterKey=NetworkStackName,ParameterValue=${networkStackName} ParameterKey=hostedZoneID,ParameterValue=${newHostedZoneID} ParameterKey=domainName,ParameterValue=${domain} ParameterKey=aliasDomainName,ParameterValue=${aliasDomainName} ParameterKey=PolicyStackName,ParameterValue=${policyStackName}|grep StackId)
 if [[ $? -eq 0 ]]; then
 echo "Stack Creation initiated"
     stackCompletion=$(aws cloudformation wait stack-create-complete --stack-name ${appStackName})
