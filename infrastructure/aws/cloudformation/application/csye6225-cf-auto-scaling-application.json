@@ -693,13 +693,13 @@
         "AliasTarget": {
           "HostedZoneId": {
             "Fn::GetAtt": [
-              "ApplicationLoadBalancer2",
+              "ApplicationLoadBalancer",
               "CanonicalHostedZoneID"
             ]
           },
           "DNSName": {
             "Fn::GetAtt": [
-              "ApplicationLoadBalancer2",
+              "ApplicationLoadBalancer",
               "DNSName"
             ]
           }
