@@ -96,10 +96,10 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="/Users/jalkotea/csye6225_Assignment/dev/ccwebapp/webapp/test/Northeastern.jpg" elementType="HTTPFileArg">
-                <stringProp name="File.path">/Users/jalkotea/csye6225_Assignment/dev/ccwebapp/webapp/test/Northeastern.jpg</stringProp>
+              <elementProp name="/Users/jalkotea/Documents/AmazonRefund.PNG" elementType="HTTPFileArg">
+                <stringProp name="File.path">/Users/jalkotea/Documents/AmazonRefund.PNG</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
-                <stringProp name="File.mimetype">image.jpg</stringProp>
+                <stringProp name="File.mimetype">image.png</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
