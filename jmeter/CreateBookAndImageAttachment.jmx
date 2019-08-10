@@ -18,7 +18,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -96,10 +96,10 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="/Users/jalkotea/csye6225_Assignment/dev/ccwebapp/webapp/test/Northeastern.jpg" elementType="HTTPFileArg">
-                <stringProp name="File.path">/Users/jalkotea/csye6225_Assignment/dev/ccwebapp/webapp/test/Northeastern.jpg</stringProp>
+              <elementProp name="/home/jalkotea/Documents/AmazonRefund.png" elementType="HTTPFileArg">
+                <stringProp name="File.path">/home/jalkotea/Documents/AmazonRefund.png</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
-                <stringProp name="File.mimetype">image.jpg</stringProp>
+                <stringProp name="File.mimetype">image/png</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>

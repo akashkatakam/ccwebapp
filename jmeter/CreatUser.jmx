@@ -46,7 +46,7 @@
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
 	&quot;username&quot;:&quot;abc${__threadNum}@gmail.com&quot;,&#xd;
-	&quot;password&quot;:&quot;aditi12${__threadNum}&quot;&#xd;
+	&quot;password&quot;:&quot;abcd123${__threadNum}&quot;&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
