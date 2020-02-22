@@ -1,3 +1,8 @@
+---
+layout: default
+---
+## AWS [Kubernetes](./kubernetes.html)
+
 ### Summary
 
  This is a library management system web application build with spring boot and deployed on AWS
