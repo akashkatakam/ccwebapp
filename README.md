@@ -1,6 +1,6 @@
 # Cloud computing on AWS
 
-![alt text](static/aws_full.png "AWS Architecture diagram")
+![alt text](https://s3.amazonaws.com/github.akashkatakam.com/aws_full.png "AWS Architecture diagram")
 
 ## Team Information
 
