@@ -1,7 +1,3 @@
-# Cloud computing
-
-## AWS
-
 ### Summary
 
  This is a library management system web application build with spring boot and deployed on AWS
