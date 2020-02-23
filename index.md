@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## AWS [Kubernetes](./kubernetes.html)
+## [AWS](./index.html) | [Kubernetes](./kubernetes.html)
 
 ### Summary
 
@@ -32,6 +32,14 @@ layout: default
 * Create the networking setup using cloud formation and aws cli 
 * Create the required IAM policies and users
 * Setup Load Balancers, Route53, DynamoDB, SNS, SES, RDS, WAF
+
+## Webapp
+
+* The Library Management System Web application is developed using Java Spring Boot framework that uses the REST architecture
+* Secured the application with  [Spring Security](https://spring.io/projects/spring-security) Basic [authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication) to retrieve user information
+* Created Maven profiles to run the app locally and when deployed on AWS
+* Storing the images of Book covers in S3
+* Generating [Pre-signed URL](https://docs.aws.amazon.com/AmazonS3/latest/dev/PresignedUrlUploadObjectJavaSDK.html) to with expiration of 2 minutes
 
 ## CI/CD
 
