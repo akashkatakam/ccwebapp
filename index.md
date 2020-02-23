@@ -2,8 +2,7 @@
 layout: default
 ---
 
-## [AWS]() | [Kubernetes](./kubernetes.html)
-
+## [AWS (CSYE 6225)]() | [Kubernetes (CSYE 7374)](./kubernetes.html)
 ### Summary
 
 This is a library management system web application build with spring boot and deployed on AWS
@@ -70,6 +69,6 @@ This is a library management system web application build with spring boot and d
 
 | Name             | NEU ID    | Email Address           |
 | ---------------- | --------- | ----------------------- |
-| Aditi Jalkote    | 001404314 | jalkote.a@husky.neu.edu |
-| Akash Katakam    | 001400025 | katakam.a@husky.neu.edu |
-| Tanmayee Kalluri | 001400957 | kalluri.t@husky.neu.edu |
+| [Aditi Jalkote](https://www.linkedin.com/in/aditijalkote/)    | 001404314 | jalkote.a@husky.neu.edu |
+| [Akash Katakam](https://www.linkedin.com/in/akash-katakam/)    | 001400025 | katakam.a@husky.neu.edu |
+| [Tanmayee Kalluri](https://www.linkedin.com/in/tanmayee-kalluri/) | 001400957 | kalluri.t@husky.neu.edu |
