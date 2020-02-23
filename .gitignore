@@ -103,3 +103,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 .idea
+webapp/mvnw
+webapp/mvnw.cmd
+webapp/opt/tomcat/logs/2019-07/app-07-22-2019-1.log.gz
+webapp/out/artifacts/ccwebapp_war2/ccwebapp.war
+webapp/out/artifacts/csye6225_war/ccwebapp_war.war
